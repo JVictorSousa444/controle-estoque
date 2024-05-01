@@ -1,0 +1,4 @@
+CREATE TABLE unidade (
+    id SERIAL PRIMARY KEY UNIQUE,
+    sigla VARCHAR(60) UNIQUE
+);

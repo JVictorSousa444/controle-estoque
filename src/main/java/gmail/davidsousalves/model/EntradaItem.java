@@ -6,29 +6,40 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Estoque {
+public class EntradaItem {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@OneToOne
-	@JoinColumn(name = "produto_id", nullable = false)
+	@ManyToOne
+	@JoinColumn(name = "entrada_id")
+	private Entrada entrada;
+	
+	@ManyToOne
+	@JoinColumn(name = "produto_id")
 	private Produto produto;
 	
 	@Column(nullable = false)
 	private Long quantidade;
 	
-	public Estoque() {
+	@Column(nullable = false)
+	private Double valorUnitario;
+	
+	
+	public EntradaItem() {
 	}
 
-	public Estoque(Long id, Produto produto, Long quantidade) {
+	public EntradaItem(Long id, Entrada entrada, Produto produto, Long quantidade,
+			 Double valorUnitario) {
 		this.id = id;
+		this.entrada = entrada;
 		this.produto = produto;
 		this.quantidade = quantidade;
+		this.valorUnitario = valorUnitario;
 	}
 
 	public Long getId() {
@@ -37,6 +48,14 @@ public class Estoque {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Entrada getEntrada() {
+		return entrada;
+	}
+
+	public void setEntrada(Entrada entrada) {
+		this.entrada = entrada;
 	}
 
 	public Produto getProduto() {
@@ -55,6 +74,14 @@ public class Estoque {
 		this.quantidade = quantidade;
 	}
 
+	public Double getValorUnitario() {
+		return valorUnitario;
+	}
+
+	public void setValorUnitario(Double valorUnitario) {
+		this.valorUnitario = valorUnitario;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -71,7 +98,7 @@ public class Estoque {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Estoque other = (Estoque) obj;
+		EntradaItem other = (EntradaItem) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -79,6 +106,5 @@ public class Estoque {
 			return false;
 		return true;
 	}
-	
 	
 }
