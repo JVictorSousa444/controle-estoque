@@ -1,11 +1,12 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import gmail.davidsousalves.dto.SaidaItemDTO;
 import gmail.davidsousalves.model.SaidaItem;
 import gmail.davidsousalves.repositories.SaidaItemRepository;
 
@@ -19,15 +20,46 @@ public class SaidaItemService {
         return repository.findAll();
     }
 
-    public Optional<SaidaItem> findById(Long id) {
-        return repository.findById(id);
-    }
+	public SaidaItemDTO findById(Long id) {
+		SaidaItem saidaItem = repository.findById(id).orElseThrow(
+				() -> new IllegalArgumentException("Id nao existe"));
+		
+		return new SaidaItemDTO(saidaItem);	
+		
+	}
 
-    public SaidaItem save(SaidaItem saidaItem) {
-        return repository.save(saidaItem);
-    }
+	public SaidaItemDTO create(SaidaItemDTO saidaItemDto) {
+		SaidaItem entity = new SaidaItem();
+		copyDtoToEntity(saidaItemDto, entity);
+		entity = repository.save(entity);
+		return new SaidaItemDTO(entity);
+	}
+	
+	public SaidaItemDTO update(Long id, SaidaItemDTO saidaItemDto) {
+		SaidaItem entity = repository.getReferenceById(id);
+		copyDtoToEntity(saidaItemDto, entity);
+		entity = repository.save(entity);
+		return new SaidaItemDTO(entity);
+	}
 
-    public void deleteById(Long id) {
-    	repository.deleteById(id);
-    }
+	public void deleteById(Long id) {
+		if (!repository.existsById(id)) {
+    		throw new IllegalArgumentException("Recurso não encontrado");
+    	}
+    	try {
+    		repository.deleteById(id);    		
+    	}
+        catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("Falha de integridade referencial");
+        }	
+    	
+	}
+    
+    private void copyDtoToEntity(SaidaItemDTO dto, SaidaItem entity) {
+		entity.setProduto(dto.produto());
+		entity.setQuantidade(dto.quantidade());
+		entity.setSaida(dto.saida());
+		entity.setValorUnitario(dto.valorUnitario());
+
+	}
 }

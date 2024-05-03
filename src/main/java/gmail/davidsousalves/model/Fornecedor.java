@@ -1,32 +1,34 @@
 package gmail.davidsousalves.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Fornecedor {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank
+	
 	@Column(nullable = false, length = 70)
 	private String nome;
 	
 	@Column(length = 255)
 	private String descricao;
 	
-	@NotBlank
+	
 	@Column(nullable = false, length = 15)
 	private String telefone;
 	
-	@NotBlank
+	
     @Email
 	@Column(nullable = false, length = 120)
 	private String email;

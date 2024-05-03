@@ -1,7 +1,6 @@
 package gmail.davidsousalves.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.dto.FabricanteDTO;
 import gmail.davidsousalves.model.Fabricante;
 import gmail.davidsousalves.services.FabricanteService;
 
@@ -32,46 +32,28 @@ public class FabricanteController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Fabricante> findById(@PathVariable Long id) {
-		Optional<Fabricante> fabricante = service.findById(id);
-		if (fabricante.isPresent()) {
-			return ResponseEntity.ok(fabricante.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<FabricanteDTO> findById(@PathVariable Long id) {
+		FabricanteDTO dto = service.findById(id);
+        return ResponseEntity.ok(dto);
+
 	}
 
 	@PostMapping
-	public ResponseEntity<Fabricante> create(@RequestBody Fabricante fabricante) {
-		Fabricante savedFabricante = service.save(fabricante);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedFabricante);
+	public ResponseEntity<FabricanteDTO> create(@RequestBody FabricanteDTO fabricanteDto) {
+		service.create(fabricanteDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(fabricanteDto);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Fabricante> update(@PathVariable Long id, @RequestBody Fabricante fabricante) {
-		Optional<Fabricante> existingFabricante = service.findById(id);
-
-		if (existingFabricante.isPresent()) {
-			fabricante.setId(id);
-			Fabricante updatedFabricante = service.save(fabricante);
-			return ResponseEntity.ok(updatedFabricante);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-
+	public ResponseEntity<FabricanteDTO> update(@PathVariable Long id, @RequestBody FabricanteDTO fabricanteDto) {
+		fabricanteDto = service.update(id, fabricanteDto);
+        return ResponseEntity.ok(fabricanteDto);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Optional<Fabricante> fabricante = service.findById(id);
-		if (fabricante.isPresent()) {
-			service.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}
-
-		else {
-			return ResponseEntity.notFound().build();
-		}
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 
 }

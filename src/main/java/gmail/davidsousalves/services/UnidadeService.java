@@ -1,11 +1,12 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import gmail.davidsousalves.dto.UnidadeDTO;
 import gmail.davidsousalves.model.Unidade;
 import gmail.davidsousalves.repositories.UnidadeRepository;
 
@@ -20,17 +21,43 @@ public class UnidadeService {
 		return repository.findAll();
 	}
 
-	public Optional<Unidade> findById(Long id) {
-		return repository.findById(id);
+	public UnidadeDTO findById(Long id) {
+		Unidade unidade = repository.findById(id).orElseThrow(
+				() -> new IllegalArgumentException("Id nao existe"));
+		
+		return new UnidadeDTO(unidade);	
+		
 	}
 
-	public Unidade create(Unidade unidade) {
-
-		return repository.save(unidade);
-
+	public UnidadeDTO create(UnidadeDTO unidadeDto) {
+		Unidade entity = new Unidade();
+		copyDtoToEntity(unidadeDto, entity);
+		entity = repository.save(entity);
+		return new UnidadeDTO(entity);
 	}
 
+	public UnidadeDTO update(Long id, UnidadeDTO unidadeDto) {
+		Unidade entity = repository.getReferenceById(id);
+		copyDtoToEntity(unidadeDto, entity);
+		entity = repository.save(entity);
+		return new UnidadeDTO(entity);
+	}
+	
 	public void deleteById(Long id) {
-		repository.deleteById(id);
+		if (!repository.existsById(id)) {
+    		throw new IllegalArgumentException("Recurso não encontrado");
+    	}
+    	try {
+    		repository.deleteById(id);    		
+    	}
+        catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("Falha de integridade referencial");
+        }	
+    	
+	}
+	
+	private void copyDtoToEntity(UnidadeDTO dto, Unidade entity) {
+		entity.setSigla(dto.sigla());
+
 	}
 }

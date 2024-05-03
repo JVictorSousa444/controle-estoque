@@ -1,7 +1,6 @@
 package gmail.davidsousalves.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.dto.EntradaItemDTO;
 import gmail.davidsousalves.model.EntradaItem;
 import gmail.davidsousalves.services.EntradaItemService;
 
@@ -32,46 +32,28 @@ public class EntradaItemController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<EntradaItem> findById(@PathVariable Long id) {
-		Optional<EntradaItem> entradaItem = service.findById(id);
-		if (entradaItem.isPresent()) {
-			return ResponseEntity.ok(entradaItem.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<EntradaItemDTO> findById(@PathVariable Long id) {
+		EntradaItemDTO dto = service.findById(id);
+		return ResponseEntity.ok(dto);
 	}
 
 	@PostMapping
-	public ResponseEntity<EntradaItem> create(@RequestBody EntradaItem entradaItem) {
-		EntradaItem savedEntradaItem = service.save(entradaItem);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedEntradaItem);
+	public ResponseEntity<EntradaItemDTO> create(@RequestBody EntradaItemDTO entradaItemDto) {
+		service.create(entradaItemDto);
+				
+		return ResponseEntity.status(HttpStatus.CREATED).body(entradaItemDto);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<EntradaItem> update(@PathVariable Long id, @RequestBody EntradaItem entradaItem) {
-		Optional<EntradaItem> existingEntradaItem = service.findById(id);
-
-		if (existingEntradaItem.isPresent()) {
-			entradaItem.setId(id);
-			EntradaItem updatedEntradaItem = service.save(entradaItem);
-			return ResponseEntity.ok(updatedEntradaItem);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-
+	public ResponseEntity<EntradaItemDTO> update(@PathVariable Long id, @RequestBody EntradaItemDTO entradaItem) {
+		service.update(id, entradaItem);
+		return ResponseEntity.ok(entradaItem);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Optional<EntradaItem> entradaItem = service.findById(id);
-		if (entradaItem.isPresent()) {
-			service.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}
-
-		else {
-			return ResponseEntity.notFound().build();
-		}
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 	
 	

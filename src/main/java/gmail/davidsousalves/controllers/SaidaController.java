@@ -1,7 +1,6 @@
 package gmail.davidsousalves.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.dto.SaidaDTO;
 import gmail.davidsousalves.model.Saida;
 import gmail.davidsousalves.services.SaidaService;
 
@@ -32,46 +32,27 @@ public class SaidaController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Saida> findById(@PathVariable Long id) {
-		Optional<Saida> saida = service.findById(id);
-		if (saida.isPresent()) {
-			return ResponseEntity.ok(saida.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<SaidaDTO> findById(@PathVariable Long id) {
+		SaidaDTO dto = service.findById(id);
+		return ResponseEntity.ok(dto);
 	}
 
 	@PostMapping
-	public ResponseEntity<Saida> create(@RequestBody Saida saida) {
-		Saida savedSaida = service.save(saida);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedSaida);
+	public ResponseEntity<SaidaDTO> create(@RequestBody SaidaDTO saidaDto) {
+		service.create(saidaDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(saidaDto);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Saida> update(@PathVariable Long id, @RequestBody Saida saida) {
-		Optional<Saida> existingSaida = service.findById(id);
-
-		if (existingSaida.isPresent()) {
-			saida.setId(id);
-			Saida updatedSaida = service.save(saida);
-			return ResponseEntity.ok(updatedSaida);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-
+	public ResponseEntity<SaidaDTO> update(@PathVariable Long id, @RequestBody SaidaDTO saidaDto) {
+		saidaDto = service.update(id, saidaDto);
+		return ResponseEntity.ok(saidaDto);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Optional<Saida> entrada = service.findById(id);
-		if (entrada.isPresent()) {
-			service.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}
-
-		else {
-			return ResponseEntity.notFound().build();
-		}
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 	
 }

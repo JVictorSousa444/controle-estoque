@@ -1,7 +1,6 @@
 package gmail.davidsousalves.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.dto.UnidadeDTO;
 import gmail.davidsousalves.model.Unidade;
 import gmail.davidsousalves.services.UnidadeService;
 
@@ -32,45 +32,29 @@ public class UnidadeController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Unidade> findById(@PathVariable Long id) {
-		Optional<Unidade> unidade = service.findById(id);
-		if (unidade.isPresent()) {
-			return ResponseEntity.ok(unidade.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<UnidadeDTO> findById(@PathVariable Long id) {
+		UnidadeDTO dto = service.findById(id);
+		return ResponseEntity.ok(dto);
 	}
 
 	@PostMapping
-	public ResponseEntity<Unidade> create(@RequestBody Unidade unidade) {
-		Unidade savedUnidade = service.create(unidade);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedUnidade);
+	public ResponseEntity<UnidadeDTO> create(@RequestBody UnidadeDTO unidade) {
+
+		service.create(unidade);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(unidade);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Unidade> update(@PathVariable Long id, @RequestBody Unidade unidade) {
-		Optional<Unidade> existingUnidade = service.findById(id);
-
-		if (existingUnidade.isPresent()) {
-			unidade.setId(id);
-			Unidade updatedUnidade = service.create(unidade);
-			return ResponseEntity.ok(updatedUnidade);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<UnidadeDTO> update(@PathVariable Long id, @RequestBody UnidadeDTO unidade) {
+		unidade = service.update(id, unidade);
+		return ResponseEntity.ok(unidade);
 
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Optional<Unidade> unidade = service.findById(id);
-		if (unidade.isPresent()) {
-			service.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}
-
-		else {
-			return ResponseEntity.notFound().build();
-		}
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 }

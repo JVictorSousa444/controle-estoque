@@ -1,7 +1,6 @@
 package gmail.davidsousalves.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.dto.FornecedorDTO;
 import gmail.davidsousalves.model.Fornecedor;
 import gmail.davidsousalves.services.FornecedorService;
 
@@ -24,7 +24,7 @@ public class FornecedorController {
 
 	@Autowired
 	private FornecedorService service;
-	
+
 	@GetMapping
 	public ResponseEntity<List<Fornecedor>> getAllUnidade() {
 		List<Fornecedor> fornecedor = service.findAll();
@@ -32,46 +32,28 @@ public class FornecedorController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Fornecedor> findById(@PathVariable Long id) {
-		Optional<Fornecedor> fornecedor = service.findById(id);
-		if (fornecedor.isPresent()) {
-			return ResponseEntity.ok(fornecedor.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<FornecedorDTO> findById(@PathVariable Long id) {
+		FornecedorDTO dto = service.findById(id);
+		return ResponseEntity.ok(dto);
 	}
 
 	@PostMapping
-	public ResponseEntity<Fornecedor> create(@RequestBody Fornecedor fornecedor) {
-		Fornecedor savedFornecedor = service.save(fornecedor);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedFornecedor);
+	public ResponseEntity<FornecedorDTO> create(@RequestBody FornecedorDTO fornecedorDto) {
+		service.create(fornecedorDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(fornecedorDto);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Fornecedor> update(@PathVariable Long id, @RequestBody Fornecedor fornecedor) {
-		Optional<Fornecedor> existingFornecedor = service.findById(id);
-
-		if (existingFornecedor.isPresent()) {
-			fornecedor.setId(id);
-			Fornecedor updatedFornecedor = service.save(fornecedor);
-			return ResponseEntity.ok(updatedFornecedor);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-
+	public ResponseEntity<FornecedorDTO> update(@PathVariable Long id, @RequestBody FornecedorDTO fornecedorDto) {
+		fornecedorDto = service.update(id, fornecedorDto);
+		return ResponseEntity.ok(fornecedorDto);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Optional<Fornecedor> fornecedor = service.findById(id);
-		if (fornecedor.isPresent()) {
-			service.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}
-
-		else {
-			return ResponseEntity.notFound().build();
-		}
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
-	
+
 }

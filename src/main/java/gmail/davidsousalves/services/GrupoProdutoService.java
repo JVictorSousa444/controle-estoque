@@ -1,11 +1,12 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import gmail.davidsousalves.dto.GrupoProdutoDTO;
 import gmail.davidsousalves.model.GrupoProduto;
 import gmail.davidsousalves.repositories.GrupoProdutoRepository;
 
@@ -19,17 +20,44 @@ public class GrupoProdutoService {
 		return repository.findAll();
 	}
 	
-	public Optional<GrupoProduto> findById(Long id) {
-		return repository.findById(id);
+	public GrupoProdutoDTO findById(Long id) {
+		GrupoProduto grupoProduto = repository.findById(id).orElseThrow(
+				() -> new IllegalArgumentException("Id nao existe"));
+		
+		return new GrupoProdutoDTO(grupoProduto);	
 	}
 
-	public GrupoProduto create(GrupoProduto grupoProduto ) {
+	public GrupoProdutoDTO create(GrupoProdutoDTO grupoProdutoDto ) {
 
-		return repository.save(grupoProduto);
-
+		GrupoProduto grupoPorduto = new GrupoProduto();
+		copyDtoToEntity(grupoProdutoDto, grupoPorduto);
+		grupoPorduto = repository.save(grupoPorduto);
+		return new GrupoProdutoDTO(grupoPorduto);
+	}
+	
+	public GrupoProdutoDTO update(Long id, GrupoProdutoDTO grupoProdutoDto) {
+		GrupoProduto entity = repository.getReferenceById(id);
+		copyDtoToEntity(grupoProdutoDto, entity);
+		entity = repository.save(entity);
+		return new GrupoProdutoDTO(entity);
 	}
 
 	public void deleteById(Long id) {
-		repository.deleteById(id);
+		if (!repository.existsById(id)) {
+    		throw new IllegalArgumentException("Recurso não encontrado");
+    	}
+    	try {
+    		repository.deleteById(id);    		
+    	}
+        catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("Falha de integridade referencial");
+        }	
+    	
+	}
+	
+	private void copyDtoToEntity(GrupoProdutoDTO dto, GrupoProduto entity) {
+		entity.setNome(dto.nome());
+		entity.setDescricao(dto.descricao());
+
 	}
 }

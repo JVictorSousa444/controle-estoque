@@ -1,7 +1,6 @@
 package gmail.davidsousalves.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.dto.SubGrupoProdutoDTO;
 import gmail.davidsousalves.model.SubgrupoProduto;
 import gmail.davidsousalves.services.SubGrupoProdutoService;
 
@@ -24,7 +24,7 @@ public class SubGrupoProdutoController {
 
 	@Autowired
 	private SubGrupoProdutoService service;
-	
+
 	@GetMapping
 	public ResponseEntity<List<SubgrupoProduto>> getAllUnidade() {
 		List<SubgrupoProduto> subGrupoProduto = service.findAll();
@@ -32,45 +32,28 @@ public class SubGrupoProdutoController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<SubgrupoProduto> findById(@PathVariable Long id) {
-		Optional<SubgrupoProduto> subGrupoProduto = service.findById(id);
-		if (subGrupoProduto.isPresent()) {
-			return ResponseEntity.ok(subGrupoProduto.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<SubGrupoProdutoDTO> findById(@PathVariable Long id) {
+		SubGrupoProdutoDTO dto = service.findById(id);
+		return ResponseEntity.ok(dto);
 	}
 
 	@PostMapping
-	public ResponseEntity<SubgrupoProduto> create(@RequestBody SubgrupoProduto subGrupoProduto) {
-		SubgrupoProduto savedSubGrupoProduto = service.save(subGrupoProduto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedSubGrupoProduto);
+	public ResponseEntity<SubGrupoProdutoDTO> create(@RequestBody SubGrupoProdutoDTO subGrupoProduto) {
+		service.create(subGrupoProduto);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(subGrupoProduto);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<SubgrupoProduto> update(@PathVariable Long id, @RequestBody SubgrupoProduto subGrupoProduto) {
-		Optional<SubgrupoProduto> existingSubGrupoProduto = service.findById(id);
-
-		if (existingSubGrupoProduto.isPresent()) {
-			subGrupoProduto.setId(id);
-			SubgrupoProduto updatedSubGrupoProduto = service.save(subGrupoProduto);
-			return ResponseEntity.ok(updatedSubGrupoProduto);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<SubGrupoProdutoDTO> update(@PathVariable Long id, @RequestBody SubGrupoProdutoDTO subGrupoProduto) {
+		subGrupoProduto = service.update(id, subGrupoProduto);
+	        return ResponseEntity.ok(subGrupoProduto);
 
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Optional<SubgrupoProduto> subGrupoProduto = service.findById(id);
-		if (subGrupoProduto.isPresent()) {
-			service.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}
-
-		else {
-			return ResponseEntity.notFound().build();
-		}
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 }

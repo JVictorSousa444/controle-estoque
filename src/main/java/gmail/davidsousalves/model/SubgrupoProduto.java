@@ -1,5 +1,9 @@
 package gmail.davidsousalves.model;
 
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +13,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class SubgrupoProduto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class SubgrupoProduto implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +49,9 @@ public class SubgrupoProduto {
 		this.id = id;
 	}
 
+	public Long getIdGrupoProduto() {
+        return grupoProduto.getId();
+    }
 
 	public String getDescricao() {
 		return descricao;

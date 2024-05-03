@@ -1,5 +1,7 @@
 package gmail.davidsousalves.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Produto {
 
 	//@Transient
@@ -44,13 +47,14 @@ public class Produto {
 	@JoinColumn(name = "fabricante_id", nullable = false)
 	private Fabricante fabricante;
 	
-	@Column(nullable = false)
-	private Double lucroSugerido;
-	
 	
 	@ManyToOne
 	@JoinColumn(name = "fornecedor_id", nullable = false)
 	private Fornecedor fornecedor;
+	
+	@Column(nullable = false)
+	private Double lucroSugerido;
+	
 
 	public Produto() {
 	}

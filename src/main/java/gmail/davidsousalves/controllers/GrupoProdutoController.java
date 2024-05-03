@@ -1,7 +1,6 @@
 package gmail.davidsousalves.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.dto.GrupoProdutoDTO;
 import gmail.davidsousalves.model.GrupoProduto;
 import gmail.davidsousalves.services.GrupoProdutoService;
 
@@ -32,47 +32,31 @@ public class GrupoProdutoController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<GrupoProduto> findById(@PathVariable Long id){
-		Optional<GrupoProduto> grupoProduto = service.findById(id);
-		
-		if(grupoProduto.isPresent()) {
-			return ResponseEntity.ok(grupoProduto.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<GrupoProdutoDTO> findById(@PathVariable Long id){
+		GrupoProdutoDTO grupoProdutoDto = service.findById(id);
+		return ResponseEntity.ok(grupoProdutoDto);
 	}
 	
 	@PostMapping
-	public ResponseEntity<GrupoProduto> create(@RequestBody GrupoProduto grupoproduto) {
-		GrupoProduto savedGrupoProduto = service.create(grupoproduto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedGrupoProduto);
+	public ResponseEntity<GrupoProdutoDTO> create(@RequestBody GrupoProdutoDTO grupoprodutoDto) {
+		
+		service.create(grupoprodutoDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(grupoprodutoDto);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<GrupoProduto> update(@PathVariable Long id, @RequestBody GrupoProduto grupoproduto) {
-		Optional<GrupoProduto> existingGrupoProduto = service.findById(id);
-
-		if (existingGrupoProduto.isPresent()) {
-			grupoproduto.setId(id);
-			GrupoProduto updatedGrupoProduto = service.create(grupoproduto);
-			return ResponseEntity.ok(updatedGrupoProduto);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-
+	public ResponseEntity<GrupoProdutoDTO> update(@PathVariable Long id, @RequestBody GrupoProdutoDTO grupoprodutoDto) {
+			grupoprodutoDto = service.update(id, grupoprodutoDto);
+			
+			return ResponseEntity.status(HttpStatus.CREATED).body(grupoprodutoDto);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Optional<GrupoProduto> grupoProduto = service.findById(id);
-		if (grupoProduto.isPresent()) {
-			service.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}
-
-		else {
-			return ResponseEntity.notFound().build();
-		}
-	}
 	
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
+		
+	}
 }

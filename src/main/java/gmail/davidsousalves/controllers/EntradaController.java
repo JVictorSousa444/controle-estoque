@@ -1,7 +1,6 @@
 package gmail.davidsousalves.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.dto.EntradaDTO;
 import gmail.davidsousalves.model.Entrada;
 import gmail.davidsousalves.services.EntradaService;
 
@@ -32,46 +32,26 @@ public class EntradaController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Entrada> findById(@PathVariable Long id) {
-		Optional<Entrada> entrada = service.findById(id);
-		if (entrada.isPresent()) {
-			return ResponseEntity.ok(entrada.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<EntradaDTO> findById(@PathVariable Long id) {
+		EntradaDTO entradaDto = service.findById(id);
+		return ResponseEntity.ok(entradaDto);
 	}
 
 	@PostMapping
-	public ResponseEntity<Entrada> create(@RequestBody Entrada entrada) {
-		Entrada savedEntrada = service.save(entrada);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedEntrada);
+	public ResponseEntity<EntradaDTO> create(@RequestBody EntradaDTO entradaDto) {
+		service.create(entradaDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(entradaDto);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Entrada> update(@PathVariable Long id, @RequestBody Entrada entrada) {
-		Optional<Entrada> existingEntrada = service.findById(id);
-
-		if (existingEntrada.isPresent()) {
-			entrada.setId(id);
-			Entrada updatedEntrada = service.save(entrada);
-			return ResponseEntity.ok(updatedEntrada);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-
+	public ResponseEntity<EntradaDTO> update(@PathVariable Long id, @RequestBody EntradaDTO entradaDto) {
+		service.update(id, entradaDto);
+		return ResponseEntity.ok(entradaDto);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Optional<Entrada> entrada = service.findById(id);
-		if (entrada.isPresent()) {
-			service.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}
-
-		else {
-			return ResponseEntity.notFound().build();
-		}
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
-	
 }

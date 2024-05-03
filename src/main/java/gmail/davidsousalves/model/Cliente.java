@@ -1,6 +1,9 @@
 package gmail.davidsousalves.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import gmail.davidsousalves.documentos.TipoDocumento;
+import gmail.davidsousalves.dto.ClienteDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,17 +13,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name =  "cliente")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Cliente {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank
 	@Column(nullable = false ,length = 70)
 	private String nome;
 	
@@ -28,21 +30,21 @@ public class Cliente {
 	@Enumerated(EnumType.STRING)
 	private TipoDocumento documento;
 	
-	@NotBlank
+	
 	@Column(nullable = false, length = 25, unique = true)
 	private String cpfCnpj;
 	
-	@NotBlank
+	
 	@Column(nullable = false, length = 120)
 	private String endereco;
 	
-	@NotBlank
+	
     @Email
-	@Column(nullable = false, length = 120, unique = true)
+	@Column(nullable = false, length = 100, unique = true)
     private String email;
 	
-	@NotBlank
-	@Column(nullable = false, length = 22)
+	
+	@Column(nullable = false, length = 20)
 	private String telefone;
 	
 	@Column(nullable = false)
@@ -52,14 +54,20 @@ public class Cliente {
 	
 	public Cliente() {
 	}
+
+	public Cliente(ClienteDTO dto) {
+		this.cpfCnpj = dto.cpfCnpj();
+		this.documento = dto.documento();
+		this.email = dto.email();
+		this.endereco = dto.endereco();
+		this.status = dto.status();
+		this.telefone = dto.telefone();
+	}
 	
 
-	
-
-
-	public Cliente(Long id, @NotBlank String nome, @NotBlank TipoDocumento documento, @NotBlank String cpfCnpj,
-			@NotBlank String endereco, @NotBlank @Email String email, @NotBlank String telefone,
-			@NotBlank StatusCliente status) {
+	public Cliente(Long id,  String nome,  TipoDocumento documento,  String cpfCnpj,
+			 String endereco,   String email,  String telefone,
+			 StatusCliente status) {
 		this.id = id;
 		this.nome = nome;
 		this.documento = documento;
@@ -75,13 +83,9 @@ public class Cliente {
 		return id;
 	}
 
-
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-
 
 
 
@@ -90,15 +94,9 @@ public class Cliente {
 	}
 
 
-
-
-
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
-
-
-
 
 
 	public TipoDocumento getDocumento() {
@@ -106,15 +104,9 @@ public class Cliente {
 	}
 
 
-
-
-
 	public void setDocumento(TipoDocumento documento) {
 		this.documento = documento;
 	}
-
-
-
 
 
 	public String getCpfCnpj() {
@@ -122,15 +114,9 @@ public class Cliente {
 	}
 
 
-
-
-
 	public void setCpfCnpj(String cpfCnpj) {
 		this.cpfCnpj = cpfCnpj;
 	}
-
-
-
 
 
 	public String getEndereco() {
@@ -138,15 +124,9 @@ public class Cliente {
 	}
 
 
-
-
-
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
-
-
-
 
 
 	public String getEmail() {
@@ -154,15 +134,9 @@ public class Cliente {
 	}
 
 
-
-
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-
-
 
 
 	public String getTelefone() {
@@ -170,15 +144,9 @@ public class Cliente {
 	}
 
 
-
-
-
 	public void setTelefone(String telefone) {
 		this.telefone = telefone;
 	}
-
-
-
 
 
 	public StatusCliente getStatus() {
@@ -186,15 +154,9 @@ public class Cliente {
 	}
 
 
-
-
-
 	public void setStatus(StatusCliente status) {
 		this.status = status;
 	}
-
-
-
 
 
 	@Override
