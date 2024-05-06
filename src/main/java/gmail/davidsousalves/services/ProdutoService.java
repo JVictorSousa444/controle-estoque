@@ -1,6 +1,7 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,20 +10,25 @@ import org.springframework.stereotype.Service;
 import gmail.davidsousalves.dto.ProdutoDTO;
 import gmail.davidsousalves.model.Produto;
 import gmail.davidsousalves.repositories.ProdutoRepository;
+import gmail.davidsousalves.services.exceptions.DatabaseException;
+import gmail.davidsousalves.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ProdutoService {
 
 	@Autowired
 	private ProdutoRepository repository;
-	
-	public List<Produto> findAll() {
-        return repository.findAll();
+	public List<ProdutoDTO> findAll() {
+        List<Produto> produtos = repository.findAll();
+        return produtos.stream()
+                .map(produto -> copyEntitytoDto(produto))
+                .collect(Collectors.toList());
     }
-
+	
 	public ProdutoDTO findById(Long id) {
 		Produto produto = repository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException("Id nao existe"));
+				() -> new ResourceNotFoundException("Id nao existe"));
 		
 		return new ProdutoDTO(produto);	
 		
@@ -37,21 +43,26 @@ public class ProdutoService {
     }
     
     public ProdutoDTO update(Long id, ProdutoDTO produtoDto) {
-    	Produto entity = repository.getReferenceById(id);
-		copyDtoToEntity(produtoDto, entity);
-		entity = repository.save(entity);
-		return new ProdutoDTO(entity);
+    	try {
+    		Produto entity = repository.getReferenceById(id);
+    		copyDtoToEntity(produtoDto, entity);
+    		entity = repository.save(entity);
+    		return new ProdutoDTO(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
+			
+		}
 	}
 
     public void deleteById(Long id) {
 		if (!repository.existsById(id)) {
-    		throw new IllegalArgumentException("Recurso não encontrado");
+    		throw new ResourceNotFoundException("Recurso não encontrado");
     	}
     	try {
     		repository.deleteById(id);    		
     	}
         catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("Falha de integridade referencial");
+            throw new DatabaseException("Falha de integridade referencial");
         }	
     	
 	}
@@ -65,5 +76,10 @@ public class ProdutoService {
 		entity.setFabricante(dto.fabricante());
 		entity.setLucroSugerido(dto.lucroSugerido());
 		entity.setFornecedor(dto.fornecedor());
+	}
+    
+    private ProdutoDTO copyEntitytoDto(Produto produto) {
+    	ProdutoDTO dto = new ProdutoDTO(produto);
+		return dto;
 	}
 }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.SaidaItemDTO;
-import gmail.davidsousalves.model.SaidaItem;
 import gmail.davidsousalves.services.SaidaItemService;
 
 @RestController
@@ -25,10 +24,10 @@ public class SaidaItemController {
 	@Autowired
 	private SaidaItemService service;
 	
-	@GetMapping
-	public ResponseEntity<List<SaidaItem>> getAllUnidade() {
-		List<SaidaItem> saida = service.findAll();
-		return ResponseEntity.ok(saida);
+	@GetMapping("/busca-todos")
+	public ResponseEntity<List<SaidaItemDTO>> buscarTodosClientes() {
+		List<SaidaItemDTO> dto = service.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 
 	@GetMapping("/{id}")

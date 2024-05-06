@@ -1,6 +1,7 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Service;
 import gmail.davidsousalves.dto.EstoqueDTO;
 import gmail.davidsousalves.model.Estoque;
 import gmail.davidsousalves.repositories.EstoqueRepository;
+import gmail.davidsousalves.services.exceptions.DatabaseException;
+import gmail.davidsousalves.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class EstoqueService {
@@ -16,13 +20,16 @@ public class EstoqueService {
 	@Autowired
 	private EstoqueRepository repository;
 	
-	public List<Estoque> findAll() {
-        return repository.findAll();
+	public List<EstoqueDTO> findAll() {
+        List<Estoque> estoques = repository.findAll();
+        return estoques.stream()
+                .map(estoque -> copyEntitytoDto(estoque))
+                .collect(Collectors.toList());
     }
 
 	public EstoqueDTO findById(Long id) {
 		Estoque estoque = repository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException("Id nao existe"));
+				() -> new ResourceNotFoundException("Id nao existe"));
 		
 		return new EstoqueDTO(estoque);	
 		
@@ -36,21 +43,26 @@ public class EstoqueService {
 	}
 
 	public EstoqueDTO update(Long id, EstoqueDTO estoqueDto) {
-		Estoque entity = repository.getReferenceById(id);
-		copyDtoToEntity(estoqueDto, entity);
-		entity = repository.save(entity);
-		return new EstoqueDTO(entity);
+		try {
+			Estoque entity = repository.getReferenceById(id);
+			copyDtoToEntity(estoqueDto, entity);
+			entity = repository.save(entity);
+			return new EstoqueDTO(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
+			
+		}	
 	}
 	
 	public void deleteById(Long id) {
 		if (!repository.existsById(id)) {
-    		throw new IllegalArgumentException("Recurso não encontrado");
+    		throw new ResourceNotFoundException("Recurso não encontrado");
     	}
     	try {
     		repository.deleteById(id);    		
     	}
         catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("Falha de integridade referencial");
+            throw new DatabaseException("Falha de integridade referencial");
         }	
     	
 	}
@@ -59,5 +71,10 @@ public class EstoqueService {
 		entity.setProduto(dto.produto());
 		entity.setQuantidade(dto.quantidade());
 
+	}
+    
+    private EstoqueDTO copyEntitytoDto(Estoque estoque) {
+    	EstoqueDTO dto = new EstoqueDTO(estoque);
+		return dto;
 	}
 }

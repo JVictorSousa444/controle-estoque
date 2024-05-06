@@ -1,14 +1,23 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.ClienteDTO;
 import gmail.davidsousalves.model.Cliente;
+import gmail.davidsousalves.model.StatusCliente;
 import gmail.davidsousalves.repositories.ClienteRepository;
+import gmail.davidsousalves.services.exceptions.DatabaseException;
+import gmail.davidsousalves.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ClienteService {
@@ -16,18 +25,49 @@ public class ClienteService {
 	@Autowired
 	private ClienteRepository clienteRepository;
 
-	public List<Cliente> findAll() {
+	public List<ClienteDTO> buscaClienteNomeStatus(String nome, StatusCliente status) {
 
-		return clienteRepository.findAll();
+		if (nome == null || nome.isEmpty()) {
+			throw new IllegalArgumentException("O nome do cliente não pode estar vazio");
+		}
+
+		if (status == null) {
+			throw new IllegalArgumentException("O status do cliente não pode estar vazio");
+		}
+
+		List<Cliente> clientes = clienteRepository.findByNomeAndStatus(nome, status);
+
+		return clientes.stream().map(cliente -> copyEntitytoDto(cliente)).collect(Collectors.toList());
+
 	}
 
-	public ClienteDTO findById(Long id){
-		Cliente cliente = clienteRepository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException("Id nao existe"));
+	public List<ClienteDTO> findAll() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        return clientes.stream()
+                .map(cliente -> copyEntitytoDto(cliente))
+                .collect(Collectors.toList());
+    }
+	 
+	
+	public List<ClienteDTO> buscarClientesPaginados(int pagina, int tamanhoPagina, String campoOrdenacao) {
 		
+        Pageable pageable = PageRequest.of(pagina, tamanhoPagina, Sort.by(campoOrdenacao));
+        Page<Cliente> clientesPage = clienteRepository.findAll(pageable);
+        List<ClienteDTO> clientesDTO = clientesPage.getContent().stream()
+                .map(this::copyEntitytoDto)
+                .collect(Collectors.toList());
+        
+        return clientesDTO;
+    }
+
+	public ClienteDTO findById(Long id) {
+		Cliente cliente = clienteRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Id nao existe"));
+
 		return new ClienteDTO(cliente);
 	}
 
+	
 	public ClienteDTO create(ClienteDTO clienteDto) {
 		Cliente entity = new Cliente();
 		copyDtoToEntity(clienteDto, entity);
@@ -35,24 +75,29 @@ public class ClienteService {
 		return new ClienteDTO(entity);
 	}
 
+	
 	public ClienteDTO update(Long id, ClienteDTO dto) {
+		try {
+			Cliente entity = clienteRepository.getReferenceById(id);
+			copyDtoToEntity(dto, entity);
+			entity = clienteRepository.save(entity);
+			return new ClienteDTO(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
 
-		Cliente entity = clienteRepository.getReferenceById(id);
-		copyDtoToEntity(dto, entity);
-		entity = clienteRepository.save(entity);
-		return new ClienteDTO(entity);
+		}
+
 	}
 
 	public void deleteById(Long id) {
 		if (!clienteRepository.existsById(id)) {
-    		throw new IllegalArgumentException("Recurso não encontrado");
-    	}
-    	try {
-    		clienteRepository.deleteById(id);    		
-    	}
-        catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("Falha de integridade referencial");
-        }
+			throw new ResourceNotFoundException("Recurso não encontrado");
+		}
+		try {
+			clienteRepository.deleteById(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException("Falha de integridade referencial");
+		}
 	}
 
 	private void copyDtoToEntity(ClienteDTO dto, Cliente entity) {
@@ -64,5 +109,10 @@ public class ClienteService {
 		entity.setStatus(dto.status());
 		entity.setTelefone(dto.telefone());
 
+	}
+
+	private ClienteDTO copyEntitytoDto(Cliente cliente) {
+		ClienteDTO dto = new ClienteDTO(cliente);
+		return dto;
 	}
 }

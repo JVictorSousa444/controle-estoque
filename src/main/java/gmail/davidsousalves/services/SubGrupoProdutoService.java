@@ -1,6 +1,7 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Service;
 import gmail.davidsousalves.dto.SubGrupoProdutoDTO;
 import gmail.davidsousalves.model.SubgrupoProduto;
 import gmail.davidsousalves.repositories.SubGrupoProdutoRepository;
+import gmail.davidsousalves.services.exceptions.DatabaseException;
+import gmail.davidsousalves.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SubGrupoProdutoService {
@@ -16,13 +20,16 @@ public class SubGrupoProdutoService {
 	@Autowired
 	private SubGrupoProdutoRepository repository;
 	
-	public List<SubgrupoProduto> findAll() {
-        return repository.findAll();
+	public List<SubGrupoProdutoDTO> findAll() {
+        List<SubgrupoProduto> subgrupoprodutos = repository.findAll();
+        return subgrupoprodutos.stream()
+                .map(subgrupoproduto -> copyEntitytoDto(subgrupoproduto))
+                .collect(Collectors.toList());
     }
-
+	
 	public SubGrupoProdutoDTO findById(Long id) {
 		SubgrupoProduto subGrupo = repository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException("Id nao existe"));
+				() -> new ResourceNotFoundException("Id nao existe"));
 		
 		return new SubGrupoProdutoDTO(subGrupo);	
 		
@@ -36,21 +43,27 @@ public class SubGrupoProdutoService {
 	}
 	
 	public SubGrupoProdutoDTO update(Long id ,SubGrupoProdutoDTO subGrupoDto) {
-		SubgrupoProduto entity = repository.getReferenceById(id);
-		copyDtoToEntity(subGrupoDto, entity);
-		entity = repository.save(entity);
-		return new SubGrupoProdutoDTO(entity);
+		try {
+			SubgrupoProduto entity = repository.getReferenceById(id);
+			copyDtoToEntity(subGrupoDto, entity);
+			entity = repository.save(entity);
+			return new SubGrupoProdutoDTO(entity);
+			
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
+		}
+		
 	}
 
 	public void deleteById(Long id) {
 		if (!repository.existsById(id)) {
-    		throw new IllegalArgumentException("Recurso não encontrado");
+    		throw new ResourceNotFoundException("Recurso não encontrado");
     	}
     	try {
     		repository.deleteById(id);    		
     	}
         catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("Falha de integridade referencial");
+            throw new DatabaseException("Falha de integridade referencial");
         }	
     	
 	}
@@ -58,5 +71,10 @@ public class SubGrupoProdutoService {
     private void copyDtoToEntity(SubGrupoProdutoDTO dto, SubgrupoProduto entity) {
 		entity.setDescricao(dto.descricao());
 		entity.setGrupoProduto(dto.grupoProduto());
+	}
+    
+    private SubGrupoProdutoDTO copyEntitytoDto(SubgrupoProduto unidade) {
+    	SubGrupoProdutoDTO dto = new SubGrupoProdutoDTO(unidade);
+		return dto;
 	}
 }

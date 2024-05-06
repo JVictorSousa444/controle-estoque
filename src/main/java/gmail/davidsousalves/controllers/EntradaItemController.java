@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.EntradaItemDTO;
-import gmail.davidsousalves.model.EntradaItem;
 import gmail.davidsousalves.services.EntradaItemService;
 
 @RestController
@@ -24,12 +24,21 @@ public class EntradaItemController {
 
 	@Autowired
 	private EntradaItemService service;
-	
-	@GetMapping
-	public ResponseEntity<List<EntradaItem>> getAllUnidade() {
-		List<EntradaItem> entradaItem = service.findAll();
-		return ResponseEntity.ok(entradaItem);
+
+	@GetMapping("/busca-todos")
+	public ResponseEntity<List<EntradaItemDTO>> buscarTodosClientes() {
+		List<EntradaItemDTO> entradaItemDTO = service.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(entradaItemDTO);
 	}
+	
+	@GetMapping("/entrada-items-paginados")
+    public ResponseEntity<List<EntradaItemDTO>> buscarClientesPaginados(
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanhoPagina,
+            @RequestParam(defaultValue = "id") String campoOrdenacao) {
+        List<EntradaItemDTO> entradasItemsDTO = service.buscarClientesPaginados(pagina, tamanhoPagina, campoOrdenacao);
+        return new ResponseEntity<>(entradasItemsDTO, HttpStatus.OK);
+    }
 
 	@GetMapping("/{id}")
 	public ResponseEntity<EntradaItemDTO> findById(@PathVariable Long id) {
@@ -40,7 +49,7 @@ public class EntradaItemController {
 	@PostMapping
 	public ResponseEntity<EntradaItemDTO> create(@RequestBody EntradaItemDTO entradaItemDto) {
 		service.create(entradaItemDto);
-				
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(entradaItemDto);
 	}
 
@@ -55,6 +64,5 @@ public class EntradaItemController {
 		service.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
-	
-	
+
 }

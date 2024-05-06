@@ -24,9 +24,11 @@ public class Saida {
 	@Column(nullable = false)
 	private LocalDateTime data;
 	
-	
 	@Column(nullable = false)
 	private LocalDateTime dataVencimento;
+	
+	@Column(nullable = false)
+	private LocalDateTime dataPagamento;
 	
 	@ManyToOne
 	@JoinColumn(name = "cliente_id", nullable = false)
@@ -35,21 +37,20 @@ public class Saida {
 	public Saida() {
 	}
 
-	
 
-	public Saida(Long id, LocalDateTime data, LocalDateTime dataVencimento, Cliente cliente) {
-		super();
+	public Saida(Long id, LocalDateTime data, LocalDateTime dataVencimento, LocalDateTime dataPagamento,
+			Cliente cliente) {
 		this.id = id;
 		this.data = data;
 		this.dataVencimento = dataVencimento;
+		this.dataPagamento = dataPagamento;
 		this.cliente = cliente;
 	}
 
-	
+
 	public Long getId() {
 		return id;
 	}
-
 
 
 	public void setId(Long id) {
@@ -57,11 +58,9 @@ public class Saida {
 	}
 
 
-
 	public LocalDateTime getData() {
 		return data;
 	}
-
 
 
 	public void setData(LocalDateTime data) {
@@ -69,11 +68,9 @@ public class Saida {
 	}
 
 
-
 	public LocalDateTime getDataVencimento() {
 		return dataVencimento;
 	}
-
 
 
 	public void setDataVencimento(LocalDateTime dataVencimento) {
@@ -81,17 +78,24 @@ public class Saida {
 	}
 
 
+	public LocalDateTime getDataPagamento() {
+		return dataPagamento;
+	}
+
+
+	public void setDataPagamento(LocalDateTime dataPagamento) {
+		this.dataPagamento = dataPagamento;
+	}
+
 
 	public Cliente getCliente() {
 		return cliente;
 	}
 
 
-
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-
 
 
 	@Override

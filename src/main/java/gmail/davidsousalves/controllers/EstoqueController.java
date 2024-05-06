@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.EstoqueDTO;
-import gmail.davidsousalves.model.Estoque;
 import gmail.davidsousalves.services.EstoqueService;
 
 @RestController
@@ -25,10 +24,10 @@ public class EstoqueController {
 	@Autowired
 	private EstoqueService service;
 
-	@GetMapping
-	public ResponseEntity<List<Estoque>> getAllUnidade() {
-		List<Estoque> estoque = service.findAll();
-		return ResponseEntity.ok(estoque);
+	@GetMapping("/busca-todos")
+	public ResponseEntity<List<EstoqueDTO>> buscarTodosClientes() {
+		List<EstoqueDTO> estoqueDTO = service.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(estoqueDTO);
 	}
 
 	@GetMapping("/{id}")

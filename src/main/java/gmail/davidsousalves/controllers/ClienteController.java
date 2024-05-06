@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.ClienteDTO;
-import gmail.davidsousalves.model.Cliente;
+import gmail.davidsousalves.model.StatusCliente;
 import gmail.davidsousalves.services.ClienteService;
 import jakarta.validation.Valid;
 
@@ -26,10 +27,30 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    @GetMapping
-    public ResponseEntity<List<Cliente>> getAllClientes() {
-        List<Cliente> clientes = clienteService.findAll();
-        return ResponseEntity.ok(clientes);
+
+    @GetMapping("/busca-todos")
+    public ResponseEntity<List<ClienteDTO>> buscarTodosClientes() {
+        List<ClienteDTO> clientesDTO = clienteService.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(clientesDTO);
+    }
+    
+    @GetMapping("/busca")
+    public ResponseEntity<List<ClienteDTO>> buscarClientesPorNomeStatus(
+            @RequestParam String nome,
+            @RequestParam StatusCliente status
+    ) {
+        List<ClienteDTO> clientesDTO = clienteService.buscaClienteNomeStatus(nome, status);
+        return new ResponseEntity<>(clientesDTO, HttpStatus.OK);
+    }
+
+    
+    @GetMapping("/clientes-paginados")
+    public ResponseEntity<List<ClienteDTO>> buscarClientesPaginados(
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanhoPagina,
+            @RequestParam(defaultValue = "id") String campoOrdenacao) {
+        List<ClienteDTO> clientesDTO = clienteService.buscarClientesPaginados(pagina, tamanhoPagina, campoOrdenacao);
+        return new ResponseEntity<>(clientesDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

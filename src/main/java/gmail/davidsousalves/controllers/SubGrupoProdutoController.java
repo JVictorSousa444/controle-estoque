@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.SubGrupoProdutoDTO;
-import gmail.davidsousalves.model.SubgrupoProduto;
 import gmail.davidsousalves.services.SubGrupoProdutoService;
 
 @RestController
@@ -25,10 +24,10 @@ public class SubGrupoProdutoController {
 	@Autowired
 	private SubGrupoProdutoService service;
 
-	@GetMapping
-	public ResponseEntity<List<SubgrupoProduto>> getAllUnidade() {
-		List<SubgrupoProduto> subGrupoProduto = service.findAll();
-		return ResponseEntity.ok(subGrupoProduto);
+	@GetMapping("/busca-todos")
+	public ResponseEntity<List<SubGrupoProdutoDTO>> buscarTodosClientes() {
+		List<SubGrupoProdutoDTO> dto = service.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 
 	@GetMapping("/{id}")

@@ -1,6 +1,7 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Service;
 import gmail.davidsousalves.dto.FabricanteDTO;
 import gmail.davidsousalves.model.Fabricante;
 import gmail.davidsousalves.repositories.FabricanteRepository;
+import gmail.davidsousalves.services.exceptions.DatabaseException;
+import gmail.davidsousalves.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class FabricanteService {
@@ -17,13 +21,16 @@ public class FabricanteService {
 	private FabricanteRepository repository;
 	
 	
-	public List<Fabricante> findAll() {
-        return repository.findAll();
+	public List<FabricanteDTO> findAll() {
+        List<Fabricante> fabricantes = repository.findAll();
+        return fabricantes.stream()
+                .map(fabricante -> copyEntitytoDto(fabricante))
+                .collect(Collectors.toList());
     }
 
 	public FabricanteDTO findById(Long id) {
 		Fabricante fabricante = repository.findById(id).orElseThrow(
-				() -> new IllegalArgumentException("Id nao existe"));
+				() -> new ResourceNotFoundException("Id nao existe"));
 		
 		return new FabricanteDTO(fabricante);	
 		
@@ -36,21 +43,26 @@ public class FabricanteService {
 		return new FabricanteDTO(entity);
 	}
 	public FabricanteDTO update(Long id, FabricanteDTO fabricanteDto) {
-		Fabricante entity = repository.getReferenceById(id);
-		copyDtoToEntity(fabricanteDto, entity);
-		entity = repository.save(entity);
-		return new FabricanteDTO(entity);
+		try {
+			Fabricante entity = repository.getReferenceById(id);
+			copyDtoToEntity(fabricanteDto, entity);
+			entity = repository.save(entity);
+			return new FabricanteDTO(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
+		}
+		
 	}
 
 	public void deleteById(Long id) {
 		if (!repository.existsById(id)) {
-    		throw new IllegalArgumentException("Recurso não encontrado");
+    		throw new ResourceNotFoundException("Recurso não encontrado");
     	}
     	try {
     		repository.deleteById(id);    		
     	}
         catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("Falha de integridade referencial");
+            throw new DatabaseException("Falha de integridade referencial");
         }	
     	
 	}
@@ -63,5 +75,10 @@ public class FabricanteService {
 		entity.setEmail(dto.email());
 		entity.setDocumento(dto.documento());
 
+	}
+    
+    private FabricanteDTO copyEntitytoDto(Fabricante fabricante) {
+    	FabricanteDTO dto = new FabricanteDTO(fabricante);
+		return dto;
 	}
 }

@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.EntradaDTO;
-import gmail.davidsousalves.model.Entrada;
 import gmail.davidsousalves.services.EntradaService;
 
 @RestController
@@ -24,12 +24,21 @@ public class EntradaController {
 
 	@Autowired
 	private EntradaService service;
-	
-	@GetMapping
-	public ResponseEntity<List<Entrada>> getAllUnidade() {
-		List<Entrada> entrada = service.findAll();
-		return ResponseEntity.ok(entrada);
+
+	@GetMapping("/busca-todos")
+	public ResponseEntity<List<EntradaDTO>> buscarTodosClientes() {
+		List<EntradaDTO> entradaDTO = service.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(entradaDTO);
 	}
+	
+	@GetMapping("/entrada-paginados")
+    public ResponseEntity<List<EntradaDTO>> buscarClientesPaginados(
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanhoPagina,
+            @RequestParam(defaultValue = "id") String campoOrdenacao) {
+        List<EntradaDTO> entradasDto = service.buscarClientesPaginados(pagina, tamanhoPagina, campoOrdenacao);
+        return new ResponseEntity<>(entradasDto, HttpStatus.OK);
+    }
 
 	@GetMapping("/{id}")
 	public ResponseEntity<EntradaDTO> findById(@PathVariable Long id) {
