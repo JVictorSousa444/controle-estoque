@@ -3,6 +3,8 @@ package gmail.davidsousalves.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +36,12 @@ public class EstoqueController {
 	public ResponseEntity<EstoqueDTO> findById(@PathVariable Long id) {
 		EstoqueDTO dto = service.findById(id);
 		return ResponseEntity.ok(dto);
+	}
+	
+	@GetMapping("/estoque-paginados")
+	public ResponseEntity<Page<EstoqueDTO>> buscaPaginada(Pageable pageable) {
+	    Page<EstoqueDTO> estoqueDTOPage = service.buscaPaginada(pageable);
+	    return ResponseEntity.ok(estoqueDTOPage);
 	}
 
 	@PostMapping

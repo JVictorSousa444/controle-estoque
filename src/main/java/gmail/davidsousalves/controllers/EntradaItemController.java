@@ -3,6 +3,8 @@ package gmail.davidsousalves.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.EntradaItemDTO;
@@ -32,13 +33,11 @@ public class EntradaItemController {
 	}
 	
 	@GetMapping("/entrada-items-paginados")
-    public ResponseEntity<List<EntradaItemDTO>> buscarClientesPaginados(
-            @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue = "10") int tamanhoPagina,
-            @RequestParam(defaultValue = "id") String campoOrdenacao) {
-        List<EntradaItemDTO> entradasItemsDTO = service.buscarClientesPaginados(pagina, tamanhoPagina, campoOrdenacao);
-        return new ResponseEntity<>(entradasItemsDTO, HttpStatus.OK);
-    }
+	public ResponseEntity<Page<EntradaItemDTO>> buscaPaginada(Pageable pageable) {
+	    Page<EntradaItemDTO> entradaItemDTOPage = service.buscaPaginada(pageable);
+	    return ResponseEntity.ok(entradaItemDTOPage);
+	}
+
 
 	@GetMapping("/{id}")
 	public ResponseEntity<EntradaItemDTO> findById(@PathVariable Long id) {

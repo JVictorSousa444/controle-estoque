@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.ProdutoDTO;
@@ -19,6 +21,7 @@ public class ProdutoService {
 
 	@Autowired
 	private ProdutoRepository repository;
+	
 	public List<ProdutoDTO> findAll() {
         List<Produto> produtos = repository.findAll();
         return produtos.stream()
@@ -33,6 +36,10 @@ public class ProdutoService {
 		return new ProdutoDTO(produto);	
 		
 	}
+	
+	public Page<ProdutoDTO> buscaPaginada(Pageable pageable) {
+        return repository.findAll(pageable).map(ProdutoDTO::new);
+    }
 
     public ProdutoDTO create(ProdutoDTO produtoDto) {
     	Produto entity = new Produto();

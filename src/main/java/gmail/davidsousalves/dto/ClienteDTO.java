@@ -12,5 +12,11 @@ public record ClienteDTO(String nome, String endereco, String email,
              clienteEntity.getEmail(), clienteEntity.getTelefone(), clienteEntity.getStatus(),
              clienteEntity.getCpfCnpj(), clienteEntity.getDocumento());
     }
-
+	
+	 public static ClienteDTO fromCliente(Cliente cliente) {
+	        return new ClienteDTO(cliente.getNome(), cliente.getEndereco(), cliente.getEmail(),
+	                cliente.getTelefone(), cliente.getStatus(), cliente.getCpfCnpj(), cliente.getDocumento());
+	    }
+	
 }
+

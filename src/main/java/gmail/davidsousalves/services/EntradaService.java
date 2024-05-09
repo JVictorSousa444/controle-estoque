@@ -6,9 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.EntradaDTO;
@@ -29,17 +27,13 @@ public class EntradaService {
 		return entradas.stream().map(entrada -> copyEntitytoDto(entrada)).collect(Collectors.toList());
 	}
 
-	public List<EntradaDTO> buscarClientesPaginados(int pagina, int tamanhoPagina, String campoOrdenacao) {
-
-		Pageable pageable = PageRequest.of(pagina, tamanhoPagina, Sort.by(campoOrdenacao));
-		Page<Entrada> entradaPage = repository.findAll(pageable);
-		List<EntradaDTO> entradasDTO = entradaPage.getContent().stream().map(this::copyEntitytoDto)
-				.collect(Collectors.toList());
-		return entradasDTO;
-	}
+	public Page<EntradaDTO> buscaPaginada(Pageable pageable) {
+        return repository.findAll(pageable).map(EntradaDTO::new);
+    }
 
 	public EntradaDTO findById(Long id) {
-		Entrada entrada = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id nao existe"));
+		Entrada entrada = repository.findById(id).orElseThrow
+				(() -> new ResourceNotFoundException("Id: " + id + " nao existe"));
 
 		return new EntradaDTO(entrada);
 

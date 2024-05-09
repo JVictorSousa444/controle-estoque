@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.EstoqueDTO;
@@ -19,20 +21,21 @@ public class EstoqueService {
 
 	@Autowired
 	private EstoqueRepository repository;
-	
+
 	public List<EstoqueDTO> findAll() {
-        List<Estoque> estoques = repository.findAll();
-        return estoques.stream()
-                .map(estoque -> copyEntitytoDto(estoque))
-                .collect(Collectors.toList());
+		List<Estoque> estoques = repository.findAll();
+		return estoques.stream().map(estoque -> copyEntitytoDto(estoque)).collect(Collectors.toList());
+	}
+
+	public Page<EstoqueDTO> buscaPaginada(Pageable pageable) {
+        return repository.findAll(pageable).map(EstoqueDTO::new);
     }
 
 	public EstoqueDTO findById(Long id) {
-		Estoque estoque = repository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Id nao existe"));
-		
-		return new EstoqueDTO(estoque);	
-		
+		Estoque estoque = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id nao existe"));
+
+		return new EstoqueDTO(estoque);
+
 	}
 
 	public EstoqueDTO create(EstoqueDTO estoqueDto) {
@@ -50,31 +53,30 @@ public class EstoqueService {
 			return new EstoqueDTO(entity);
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Recurso não encontrado");
-			
-		}	
+
+		}
 	}
-	
+
 	public void deleteById(Long id) {
 		if (!repository.existsById(id)) {
-    		throw new ResourceNotFoundException("Recurso não encontrado");
-    	}
-    	try {
-    		repository.deleteById(id);    		
-    	}
-        catch (DataIntegrityViolationException e) {
-            throw new DatabaseException("Falha de integridade referencial");
-        }	
-    	
+			throw new ResourceNotFoundException("Recurso não encontrado");
+		}
+		try {
+			repository.deleteById(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException("Falha de integridade referencial");
+		}
+
 	}
-	
-    private void copyDtoToEntity(EstoqueDTO dto, Estoque entity) {
+
+	private void copyDtoToEntity(EstoqueDTO dto, Estoque entity) {
 		entity.setProduto(dto.produto());
 		entity.setQuantidade(dto.quantidade());
 
 	}
-    
-    private EstoqueDTO copyEntitytoDto(Estoque estoque) {
-    	EstoqueDTO dto = new EstoqueDTO(estoque);
+
+	private EstoqueDTO copyEntitytoDto(Estoque estoque) {
+		EstoqueDTO dto = new EstoqueDTO(estoque);
 		return dto;
 	}
 }

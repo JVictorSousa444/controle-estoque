@@ -6,9 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.ClienteDTO;
@@ -25,15 +23,8 @@ public class ClienteService {
 	@Autowired
 	private ClienteRepository clienteRepository;
 
+
 	public List<ClienteDTO> buscaClienteNomeStatus(String nome, StatusCliente status) {
-
-		if (nome == null || nome.isEmpty()) {
-			throw new IllegalArgumentException("O nome do cliente não pode estar vazio");
-		}
-
-		if (status == null) {
-			throw new IllegalArgumentException("O status do cliente não pode estar vazio");
-		}
 
 		List<Cliente> clientes = clienteRepository.findByNomeAndStatus(nome, status);
 
@@ -42,32 +33,24 @@ public class ClienteService {
 	}
 
 	public List<ClienteDTO> findAll() {
-        List<Cliente> clientes = clienteRepository.findAll();
-        return clientes.stream()
-                .map(cliente -> copyEntitytoDto(cliente))
-                .collect(Collectors.toList());
-    }
-	 
-	
-	public List<ClienteDTO> buscarClientesPaginados(int pagina, int tamanhoPagina, String campoOrdenacao) {
-		
-        Pageable pageable = PageRequest.of(pagina, tamanhoPagina, Sort.by(campoOrdenacao));
-        Page<Cliente> clientesPage = clienteRepository.findAll(pageable);
-        List<ClienteDTO> clientesDTO = clientesPage.getContent().stream()
-                .map(this::copyEntitytoDto)
-                .collect(Collectors.toList());
-        
-        return clientesDTO;
-    }
-
-	public ClienteDTO findById(Long id) {
-		Cliente cliente = clienteRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Id nao existe"));
-
-		return new ClienteDTO(cliente);
+		List<Cliente> clientes = clienteRepository.findAll();
+		return clientes.stream().map(cliente -> copyEntitytoDto(cliente)).collect(Collectors.toList());
 	}
 
-	
+	public Page<ClienteDTO> buscaPaginada(Pageable pageable) {
+        return clienteRepository.findAll(pageable).map(ClienteDTO::fromCliente);
+    }
+
+
+
+	public ClienteDTO findById(Long id) {
+		Cliente cliente = clienteRepository.findById(id).orElseThrow(
+				() -> new ResourceNotFoundException("Id: " + id + " nao existe"));
+		
+		return new ClienteDTO(cliente);	
+		
+	}
+
 	public ClienteDTO create(ClienteDTO clienteDto) {
 		Cliente entity = new Cliente();
 		copyDtoToEntity(clienteDto, entity);
@@ -75,7 +58,6 @@ public class ClienteService {
 		return new ClienteDTO(entity);
 	}
 
-	
 	public ClienteDTO update(Long id, ClienteDTO dto) {
 		try {
 			Cliente entity = clienteRepository.getReferenceById(id);

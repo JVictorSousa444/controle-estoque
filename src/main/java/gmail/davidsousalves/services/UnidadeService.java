@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.UnidadeDTO;
@@ -25,6 +27,10 @@ public class UnidadeService {
         return unidades.stream()
                 .map(unidade -> copyEntitytoDto(unidade))
                 .collect(Collectors.toList());
+    }
+	
+	public Page<UnidadeDTO> buscaPaginada(Pageable pageable) {
+        return repository.findAll(pageable).map(UnidadeDTO::new);
     }
 
 	public UnidadeDTO findById(Long id) {

@@ -9,4 +9,10 @@ public record EntradaItemDTO(Entrada entrada, Produto produto, Long quantidade, 
 	public EntradaItemDTO(EntradaItem entity) {
 		this(entity.getEntrada(), entity.getProduto(), entity.getQuantidade(), entity.getValorUnitario());
 	}
-}
+	
+	 public static EntradaItemDTO fromEntradaItem(EntradaItem entity) {
+	        return new EntradaItemDTO(entity.getEntrada(), entity.getProduto(), entity.getQuantidade(), entity.getValorUnitario());
+	    }
+	    
+	}
+

@@ -3,6 +3,8 @@ package gmail.davidsousalves.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,58 +26,52 @@ import jakarta.validation.Valid;
 @RequestMapping("/clientes")
 public class ClienteController {
 
-    @Autowired
-    private ClienteService clienteService;
+	@Autowired
+	private ClienteService clienteService;
+
+	@GetMapping("/busca-todos")
+	public ResponseEntity<List<ClienteDTO>> buscarTodosClientes() {
+		List<ClienteDTO> clientesDTO = clienteService.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(clientesDTO);
+	}
+
+	@GetMapping("/busca")
+	public ResponseEntity<List<ClienteDTO>> buscarClientesPorNomeStatus(@RequestParam String nome,
+			@RequestParam StatusCliente status) {
+		List<ClienteDTO> clientesDTO = clienteService.buscaClienteNomeStatus(nome, status);
+		return new ResponseEntity<>(clientesDTO, HttpStatus.OK);
+	}
+
+	@GetMapping("/clientes-paginados")
+	public ResponseEntity<Page<ClienteDTO>> buscaPaginada(Pageable pageable) {
+	    Page<ClienteDTO> clienteDTOPage = clienteService.buscaPaginada(pageable);
+	    return ResponseEntity.ok(clienteDTOPage);
+	}
 
 
-    @GetMapping("/busca-todos")
-    public ResponseEntity<List<ClienteDTO>> buscarTodosClientes() {
-        List<ClienteDTO> clientesDTO = clienteService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(clientesDTO);
-    }
-    
-    @GetMapping("/busca")
-    public ResponseEntity<List<ClienteDTO>> buscarClientesPorNomeStatus(
-            @RequestParam String nome,
-            @RequestParam StatusCliente status
-    ) {
-        List<ClienteDTO> clientesDTO = clienteService.buscaClienteNomeStatus(nome, status);
-        return new ResponseEntity<>(clientesDTO, HttpStatus.OK);
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<ClienteDTO> getClienteById(@PathVariable Long id) {
+		ClienteDTO dto = clienteService.findById(id);
+		return ResponseEntity.ok(dto);
+	}
 
-    
-    @GetMapping("/clientes-paginados")
-    public ResponseEntity<List<ClienteDTO>> buscarClientesPaginados(
-            @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue = "10") int tamanhoPagina,
-            @RequestParam(defaultValue = "id") String campoOrdenacao) {
-        List<ClienteDTO> clientesDTO = clienteService.buscarClientesPaginados(pagina, tamanhoPagina, campoOrdenacao);
-        return new ResponseEntity<>(clientesDTO, HttpStatus.OK);
-    }
+	@PostMapping
+	public ResponseEntity<ClienteDTO> createCliente(@RequestBody ClienteDTO cliente) {
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ClienteDTO> getClienteById(@PathVariable Long id) {
-    	 ClienteDTO dto = clienteService.findById(id);
-         return ResponseEntity.ok(dto);
-    }
+		clienteService.create(cliente);
 
-    @PostMapping
-    public ResponseEntity<ClienteDTO> createCliente(@RequestBody ClienteDTO cliente) {
-    	
-    	clienteService.create(cliente);
-    	
-    	return ResponseEntity.status(HttpStatus.CREATED).body(cliente);
-    }
+		return ResponseEntity.status(HttpStatus.CREATED).body(cliente);
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ClienteDTO> update(@PathVariable Long id, @Valid @RequestBody ClienteDTO dto) {
-        dto = clienteService.update(id, dto);
-        return ResponseEntity.ok(dto);
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity<ClienteDTO> update(@PathVariable Long id, @Valid @RequestBody ClienteDTO dto) {
+		dto = clienteService.update(id, dto);
+		return ResponseEntity.ok(dto);
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
-    	clienteService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
+		clienteService.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
 }
