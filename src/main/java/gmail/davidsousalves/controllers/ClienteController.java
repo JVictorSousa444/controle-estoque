@@ -42,7 +42,7 @@ public class ClienteController {
 		return new ResponseEntity<>(clientesDTO, HttpStatus.OK);
 	}
 
-	@GetMapping("/clientes-paginados")
+	@GetMapping("")
 	public ResponseEntity<Page<ClienteDTO>> buscaPaginada(Pageable pageable) {
 	    Page<ClienteDTO> clienteDTOPage = clienteService.buscaPaginada(pageable);
 	    return ResponseEntity.ok(clienteDTOPage);
