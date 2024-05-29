@@ -20,7 +20,7 @@ import gmail.davidsousalves.dto.FornecedorDTO;
 import gmail.davidsousalves.services.FornecedorService;
 
 @RestController
-@RequestMapping("/fornecedor")
+@RequestMapping("/fornecedores")
 public class FornecedorController {
 
 	@Autowired
@@ -38,7 +38,7 @@ public class FornecedorController {
 		return ResponseEntity.ok(dto);
 	}
 	
-	@GetMapping("/fornecedor-paginados")
+	@GetMapping()
 	public ResponseEntity<Page<FornecedorDTO>> buscaPaginada(Pageable pageable) {
 	    Page<FornecedorDTO> fornecedorDTOPage = service.buscaPaginada(pageable);
 	    return ResponseEntity.ok(fornecedorDTOPage);
