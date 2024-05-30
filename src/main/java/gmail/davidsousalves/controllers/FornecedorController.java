@@ -39,8 +39,8 @@ public class FornecedorController {
 	}
 	
 	@GetMapping()
-	public ResponseEntity<Page<FornecedorDTO>> buscaPaginada(Pageable pageable) {
-	    Page<FornecedorDTO> fornecedorDTOPage = service.buscaPaginada(pageable);
+	public ResponseEntity<Page<FornecedorDTO>> buscaPaginada(String nome, Pageable pageable) {
+	    Page<FornecedorDTO> fornecedorDTOPage = service.buscaPaginada(nome, pageable);
 	    return ResponseEntity.ok(fornecedorDTOPage);
 	}
 

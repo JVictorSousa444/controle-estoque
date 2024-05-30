@@ -3,6 +3,7 @@ package gmail.davidsousalves.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -29,8 +30,12 @@ public class FornecedorService {
                 .collect(Collectors.toList());
     }
 	
-	public Page<FornecedorDTO> buscaPaginada(Pageable pageable) {
-        return repository.findAll(pageable).map(FornecedorDTO::new);
+	public Page<FornecedorDTO> buscaPaginada(String nome, Pageable pageable) {
+		if (StringUtils.isEmpty(nome)) {
+        	return repository.findAll(pageable).map(FornecedorDTO::new);
+		} else {
+			return repository.findByNomeContainingIgnoreCase(nome, pageable).map(FornecedorDTO::new);
+		}
     }
 
 	public FornecedorDTO findById(Long id) {

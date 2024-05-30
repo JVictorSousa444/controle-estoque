@@ -7,7 +7,7 @@ import gmail.davidsousalves.model.Produto;
 import gmail.davidsousalves.model.Unidade;
 
 
-public record ProdutoDTO(String nome, String descricao, Long codigo, GrupoProduto grupoproduto, Unidade tipoUnidade,
+public record ProdutoDTO(String nome, String descricao, Long codigo, GrupoProduto grupoProduto, Unidade tipoUnidade,
 		Fabricante fabricante, Double lucroSugerido, Fornecedor fornecedor) {
 
 	public ProdutoDTO(Produto entity) {

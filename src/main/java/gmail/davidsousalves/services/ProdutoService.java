@@ -78,7 +78,7 @@ public class ProdutoService {
 		entity.setNome(dto.nome());
 		entity.setDescricao(dto.descricao());
 		entity.setCodigo(dto.codigo());
-		entity.setGrupoproduto(dto.grupoproduto());
+		entity.setGrupoproduto(dto.grupoProduto());
 		entity.setTipoUnidade(dto.tipoUnidade());
 		entity.setFabricante(dto.fabricante());
 		entity.setLucroSugerido(dto.lucroSugerido());
