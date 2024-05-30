@@ -38,7 +38,7 @@ public class ProdutoController {
 		return ResponseEntity.ok(dto);
 	}
 	
-	@GetMapping("/produto-paginados")
+	@GetMapping()
 	public ResponseEntity<Page<ProdutoDTO>> buscaPaginada(Pageable pageable) {
 	    Page<ProdutoDTO> produtoDTOPage = service.buscaPaginada(pageable);
 	    return ResponseEntity.ok(produtoDTOPage);

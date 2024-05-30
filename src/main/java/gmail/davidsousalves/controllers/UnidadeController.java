@@ -38,7 +38,7 @@ public class UnidadeController {
 		return ResponseEntity.ok(dto);
 	}
 	
-	@GetMapping("/unidade-paginados")
+	@GetMapping()
 	public ResponseEntity<Page<UnidadeDTO>> buscaPaginada(Pageable pageable) {
 	    Page<UnidadeDTO> unidadeDTOPage = service.buscaPaginada(pageable);
 	    return ResponseEntity.ok(unidadeDTOPage);
