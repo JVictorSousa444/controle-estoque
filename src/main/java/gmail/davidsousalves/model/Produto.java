@@ -44,16 +44,17 @@ public class Produto {
 	private Unidade tipoUnidade;
 	
 	@ManyToOne
-	@JoinColumn(name = "fabricante_id", nullable = false)
+	@JoinColumn(name = "fabricante_id")
 	private Fabricante fabricante;
 	
 	
 	@ManyToOne
 	@JoinColumn(name = "fornecedor_id", nullable = false)
 	private Fornecedor fornecedor;
-	
-	@Column(nullable = false)
+
 	private Double lucroSugerido;
+
+	private Integer quantidade;
 	
 
 	public Produto() {
@@ -143,6 +144,14 @@ public class Produto {
 
 	public void setFornecedor(Fornecedor fornecedor) {
 		this.fornecedor = fornecedor;
+	}
+
+	public Integer getQuantidade() {
+		return quantidade;
+	}
+
+	public void setQuantidade(Integer quantidade) {
+		this.quantidade = quantidade;
 	}
 
 	@Override
