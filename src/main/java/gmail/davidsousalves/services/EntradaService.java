@@ -10,10 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.EntradaDTO;
+import gmail.davidsousalves.exceptions.DatabaseException;
+import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.Entrada;
 import gmail.davidsousalves.repositories.EntradaRepository;
-import gmail.davidsousalves.services.exceptions.DatabaseException;
-import gmail.davidsousalves.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -21,7 +21,8 @@ public class EntradaService {
 
 	@Autowired
 	private EntradaRepository repository;
-
+	
+	
 	public List<EntradaDTO> findAll() {
 		List<Entrada> entradas = repository.findAll();
 		return entradas.stream().map(entrada -> copyEntitytoDto(entrada)).collect(Collectors.toList());
@@ -80,4 +81,5 @@ public class EntradaService {
 		EntradaDTO dto = new EntradaDTO(entrada);
 		return dto;
 	}
+	
 }

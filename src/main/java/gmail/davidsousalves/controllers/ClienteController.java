@@ -23,7 +23,7 @@ import gmail.davidsousalves.services.ClienteService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/clientes")
 public class ClienteController {
 
 	@Autowired

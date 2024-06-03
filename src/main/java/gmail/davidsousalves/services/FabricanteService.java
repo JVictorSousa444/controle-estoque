@@ -10,10 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.FabricanteDTO;
+import gmail.davidsousalves.exceptions.DatabaseException;
+import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.Fabricante;
 import gmail.davidsousalves.repositories.FabricanteRepository;
-import gmail.davidsousalves.services.exceptions.DatabaseException;
-import gmail.davidsousalves.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
