@@ -44,6 +44,7 @@ public class ProdutoService {
     public ProdutoDTO create(ProdutoDTO produtoDto) {
     	Produto entity = new Produto();
 		copyDtoToEntity(produtoDto, entity);
+		entity.setQuantidade(0);
 		entity = repository.save(entity);
 		return new ProdutoDTO(entity);
     
@@ -72,6 +73,14 @@ public class ProdutoService {
             throw new DatabaseException("Falha de integridade referencial");
         }	
     	
+	}
+
+	public void atualizarQuantidade(Long id, Integer quantidade) {
+		repository.atualizarQuantidade(id, quantidade);
+	}
+
+	public void atualizarQuantidadeRemover(Long id, Integer quantidade) {
+		repository.atualizarQuantidadeRemover(id, quantidade);
 	}
     
     private void copyDtoToEntity(ProdutoDTO dto, Produto entity) {

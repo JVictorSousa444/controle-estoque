@@ -1,11 +1,17 @@
 package gmail.davidsousalves.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import gmail.davidsousalves.model.EntradaItem;
+import gmail.davidsousalves.utils.DataUtils;
+import gmail.davidsousalves.vo.EntradaItemVO;
+import gmail.davidsousalves.vo.EntradaVO;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +28,31 @@ public class EntradaService {
 	@Autowired
 	private EntradaRepository repository;
 
+	@Autowired
+	private EntradaItemService entradaItemService;
+
 	public List<EntradaDTO> findAll() {
 		List<Entrada> entradas = repository.findAll();
 		return entradas.stream().map(entrada -> copyEntitytoDto(entrada)).collect(Collectors.toList());
 	}
 
-	public Page<EntradaDTO> buscaPaginada(Pageable pageable) {
-        return repository.findAll(pageable).map(EntradaDTO::new);
+	public Page<EntradaVO> buscaPaginada(Pageable pageable) {
+		Page<Entrada> lista = repository.findAll(pageable);
+		List<EntradaVO> retorno = new ArrayList<>();
+
+		if (lista != null) {
+			for(Entrada entrada : lista.getContent()) {
+				List<EntradaItem> itens = entradaItemService.findByEntityId(entrada.getId());
+				EntradaVO entradaVO = EntradaVO.builder()
+						.dataEntrada(DataUtils.converterLocalDateTimeParaDate(entrada.getDataEntrada()))
+						.id(entrada.getId())
+						.itens(converterEntradaItem(itens))
+						.build();
+				retorno.add(entradaVO);
+			}
+		}
+
+        return new PageImpl<EntradaVO>(retorno, pageable, lista.getTotalElements());
     }
 
 	public EntradaDTO findById(Long id) {
@@ -39,18 +63,28 @@ public class EntradaService {
 
 	}
 
+	@Transactional
 	public EntradaDTO create(EntradaDTO entradaDto) {
 		Entrada entity = new Entrada();
 		copyDtoToEntity(entradaDto, entity);
 		entity = repository.save(entity);
+		for (EntradaItem item : entradaDto.itens()) {
+			item.setEntrada(entity);
+		}
+		entradaItemService.create(entradaDto.itens());
 		return new EntradaDTO(entity);
 	}
 
+	@Transactional
 	public EntradaDTO update(Long id, EntradaDTO entradaDto) {
 		try {
 			Entrada entity = repository.getReferenceById(id);
 			copyDtoToEntity(entradaDto, entity);
 			entity = repository.save(entity);
+			for (EntradaItem item : entradaDto.itens()) {
+				item.setEntrada(entity);
+			}
+			entradaItemService.create(entradaDto.itens());
 			return new EntradaDTO(entity);
 
 		} catch (EntityNotFoundException e) {
@@ -79,5 +113,19 @@ public class EntradaService {
 	private EntradaDTO copyEntitytoDto(Entrada entrada) {
 		EntradaDTO dto = new EntradaDTO(entrada);
 		return dto;
+	}
+
+	private List<EntradaItemVO> converterEntradaItem(List<EntradaItem> itens) {
+		List<EntradaItemVO> retorno = new ArrayList<>();
+		for (EntradaItem item : itens) {
+			EntradaItemVO entradaItemVO = EntradaItemVO.builder()
+					.produto(item.getProduto().getNome())
+					.valorUnitario(item.getValorUnitario())
+					.quantidade(item.getQuantidade())
+					.valorTotal(item.getValorUnitario() * item.getQuantidade())
+					.build();
+			retorno.add(entradaItemVO);
+		}
+		return retorno;
 	}
 }
