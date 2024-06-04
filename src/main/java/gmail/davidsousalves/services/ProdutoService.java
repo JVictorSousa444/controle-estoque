@@ -1,6 +1,7 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,16 @@ public class ProdutoService {
 	}
 
 	public void atualizarQuantidadeRemover(Long id, Integer quantidade) {
-		repository.atualizarQuantidadeRemover(id, quantidade);
+		Optional<Produto> produto = repository.findById(id);
+
+		if (produto.isPresent()) {
+			if (produto.get().getQuantidade().compareTo(quantidade) < 0) {
+				throw new RuntimeException(produto.get().getNome() +
+						" com quantidade insuficiente para saida. Quantidade solicitada: " + quantidade +
+						". Quantidade em estoque: " + produto.get().getQuantidade());
+			}
+			repository.atualizarQuantidadeRemover(id, quantidade);
+		}
 	}
     
     private void copyDtoToEntity(ProdutoDTO dto, Produto entity) {

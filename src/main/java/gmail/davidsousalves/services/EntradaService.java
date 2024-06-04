@@ -7,6 +7,7 @@ import gmail.davidsousalves.model.EntradaItem;
 import gmail.davidsousalves.utils.DataUtils;
 import gmail.davidsousalves.vo.EntradaItemVO;
 import gmail.davidsousalves.vo.EntradaVO;
+import gmail.davidsousalves.vo.ProdutoVO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -118,8 +119,14 @@ public class EntradaService {
 	private List<EntradaItemVO> converterEntradaItem(List<EntradaItem> itens) {
 		List<EntradaItemVO> retorno = new ArrayList<>();
 		for (EntradaItem item : itens) {
+			ProdutoVO produtoVO = ProdutoVO.builder()
+					.id(item.getProduto().getId())
+					.nome(item.getProduto().getNome())
+					.quantidade(item.getProduto().getQuantidade())
+					.build();
 			EntradaItemVO entradaItemVO = EntradaItemVO.builder()
-					.produto(item.getProduto().getNome())
+					.id(item.getId())
+					.produto(produtoVO)
 					.valorUnitario(item.getValorUnitario())
 					.quantidade(item.getQuantidade())
 					.valorTotal(item.getValorUnitario() * item.getQuantidade())

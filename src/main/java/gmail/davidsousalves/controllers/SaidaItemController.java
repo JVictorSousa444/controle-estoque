@@ -20,7 +20,7 @@ import gmail.davidsousalves.dto.SaidaItemDTO;
 import gmail.davidsousalves.services.SaidaItemService;
 
 @RestController
-@RequestMapping("/saida-item")
+@RequestMapping("/saidas-itens")
 public class SaidaItemController {
 	
 	@Autowired
@@ -59,7 +59,7 @@ public class SaidaItemController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		service.findById(id);
+		service.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 }
