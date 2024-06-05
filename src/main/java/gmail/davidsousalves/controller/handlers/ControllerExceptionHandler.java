@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import gmail.davidsousalves.dto.response.exception.CustomErrorDTO;
 import gmail.davidsousalves.exceptions.DatabaseException;
-import gmail.davidsousalves.exceptions.InvalidJwtAuthenticationException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -30,10 +29,4 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
     
-    @ExceptionHandler(InvalidJwtAuthenticationException.class)
-    public ResponseEntity<CustomErrorDTO> invalidJwtAuthenticationException(DatabaseException e, HttpServletRequest request) {
-    	HttpStatus status = HttpStatus.FORBIDDEN;
-    	CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
-    	return ResponseEntity.status(status).body(err);
-    }
 }

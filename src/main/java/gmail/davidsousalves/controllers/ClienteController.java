@@ -29,6 +29,7 @@ public class ClienteController {
 	@Autowired
 	private ClienteService clienteService;
 
+	//@PreAuthorize("hasRole('USER')")
 	@GetMapping("/busca-todos")
 	public ResponseEntity<List<ClienteDTO>> buscarTodosClientes() {
 		List<ClienteDTO> clientesDTO = clienteService.findAll();
@@ -36,11 +37,12 @@ public class ClienteController {
 	}
 
 	@GetMapping("/busca")
-	public ResponseEntity<List<ClienteDTO>> buscarClientesPorNomeStatus(@RequestParam String nome,
-			@RequestParam StatusCliente status) {
-		List<ClienteDTO> clientesDTO = clienteService.buscaClienteNomeStatus(nome, status);
-		return new ResponseEntity<>(clientesDTO, HttpStatus.OK);
-	}
+	public ResponseEntity<List<ClienteDTO>> buscaClienteNomeStatus(
+            @RequestParam String nome,
+            @RequestParam(required = false) StatusCliente status) {
+        List<ClienteDTO> clientes = clienteService.buscaClienteNomeStatus(nome, status);
+        return ResponseEntity.ok(clientes);
+    }
 
 	@GetMapping("/clientes-paginados")
 	public ResponseEntity<Page<ClienteDTO>> buscaPaginada(Pageable pageable) {

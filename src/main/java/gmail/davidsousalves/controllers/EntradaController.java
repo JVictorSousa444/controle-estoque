@@ -20,7 +20,7 @@ import gmail.davidsousalves.dto.EntradaDTO;
 import gmail.davidsousalves.services.EntradaService;
 
 @RestController
-@RequestMapping("/entrada")
+@RequestMapping("/api/entrada")
 public class EntradaController {
 
 	@Autowired
