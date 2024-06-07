@@ -1,6 +1,7 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class ProdutoService {
     public ProdutoDTO create(ProdutoDTO produtoDto) {
     	Produto entity = new Produto();
 		copyDtoToEntity(produtoDto, entity);
+		entity.setQuantidade(0);
 		entity = repository.save(entity);
 		return new ProdutoDTO(entity);
     
@@ -73,12 +75,29 @@ public class ProdutoService {
         }	
     	
 	}
+
+	public void atualizarQuantidade(Long id, Integer quantidade) {
+		repository.atualizarQuantidade(id, quantidade);
+	}
+
+	public void atualizarQuantidadeRemover(Long id, Integer quantidade) {
+		Optional<Produto> produto = repository.findById(id);
+
+		if (produto.isPresent()) {
+			if (produto.get().getQuantidade().compareTo(quantidade) < 0) {
+				throw new RuntimeException(produto.get().getNome() +
+						" com quantidade insuficiente para saida. Quantidade solicitada: " + quantidade +
+						". Quantidade em estoque: " + produto.get().getQuantidade());
+			}
+			repository.atualizarQuantidadeRemover(id, quantidade);
+		}
+	}
     
     private void copyDtoToEntity(ProdutoDTO dto, Produto entity) {
 		entity.setNome(dto.nome());
 		entity.setDescricao(dto.descricao());
 		entity.setCodigo(dto.codigo());
-		entity.setGrupoproduto(dto.grupoproduto());
+		entity.setGrupoproduto(dto.grupoProduto());
 		entity.setTipoUnidade(dto.tipoUnidade());
 		entity.setFabricante(dto.fabricante());
 		entity.setLucroSugerido(dto.lucroSugerido());

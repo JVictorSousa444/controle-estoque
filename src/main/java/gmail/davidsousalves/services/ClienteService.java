@@ -3,6 +3,8 @@ package gmail.davidsousalves.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import gmail.davidsousalves.documentos.TipoDocumento;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -88,11 +90,20 @@ public class ClienteService {
 		entity.setEndereco(dto.endereco());
 		entity.setStatus(dto.status());
 		entity.setTelefone(dto.telefone());
+		entity.setDocumento(buscarTipoDocumento(dto));
 
 	}
 
 	private ClienteDTO copyEntitytoDto(Cliente cliente) {
 		ClienteDTO dto = new ClienteDTO(cliente);
 		return dto;
+	}
+
+	private TipoDocumento buscarTipoDocumento(ClienteDTO clienteDTO) {
+		if (clienteDTO == null || StringUtils.isEmpty(clienteDTO.cpfCnpj())) {
+			return null;
+		}
+
+		return clienteDTO.cpfCnpj().length() > 11 ? TipoDocumento.CNPJ : TipoDocumento.CPF;
 	}
 }

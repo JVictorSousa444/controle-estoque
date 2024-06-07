@@ -2,6 +2,7 @@ package gmail.davidsousalves.controllers;
 
 import java.util.List;
 
+import gmail.davidsousalves.vo.EntradaVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,9 +33,9 @@ public class EntradaController {
 		return ResponseEntity.status(HttpStatus.OK).body(entradaDTO);
 	}
 	
-	@GetMapping("/entrada-paginados")
-	public ResponseEntity<Page<EntradaDTO>> buscaPaginada(Pageable pageable) {
-	    Page<EntradaDTO> entradaDTOPage = service.buscaPaginada(pageable);
+	@GetMapping()
+	public ResponseEntity<Page<EntradaVO>> buscaPaginada(Pageable pageable) {
+	    Page<EntradaVO> entradaDTOPage = service.buscaPaginada(pageable);
 	    return ResponseEntity.ok(entradaDTOPage);
 	}
 

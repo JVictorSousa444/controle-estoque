@@ -59,7 +59,7 @@ public class SaidaItemController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		service.findById(id);
+		service.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 }

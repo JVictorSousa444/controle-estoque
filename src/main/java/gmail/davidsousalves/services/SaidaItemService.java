@@ -1,6 +1,7 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,17 @@ import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.SaidaItem;
 import gmail.davidsousalves.repositories.SaidaItemRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SaidaItemService {
 
 	@Autowired
 	private SaidaItemRepository repository;
+
+	@Autowired
+	private ProdutoService produtoService;
 	
 	public List<SaidaItemDTO> findAll() {
         List<SaidaItem> saidaItems = repository.findAll();
@@ -46,6 +52,21 @@ public class SaidaItemService {
 		entity = repository.save(entity);
 		return new SaidaItemDTO(entity);
 	}
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	public List<SaidaItem>  create(List<SaidaItem> itens) {
+
+		for(SaidaItem saidaItem : itens) {
+			if (saidaItem.getId() != null) {
+				continue;
+			}
+			Long idProduto = saidaItem.getProduto().getId();
+			Long quantidade = saidaItem.getQuantidade();
+			produtoService.atualizarQuantidadeRemover(idProduto, quantidade != null ? quantidade.intValue() : 0);
+		}
+		List<SaidaItem> saidaItems = repository.saveAll(itens);
+		return saidaItems;
+	}
 	
 	public SaidaItemDTO update(Long id, SaidaItemDTO saidaItemDto) {
 		try {
@@ -60,17 +81,25 @@ public class SaidaItemService {
 		
 	}
 
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void deleteById(Long id) {
 		if (!repository.existsById(id)) {
     		throw new ResourceNotFoundException("Recurso não encontrado");
     	}
     	try {
-    		repository.deleteById(id);    		
+			Optional<SaidaItem> item = repository.findById(id);
+			SaidaItem saidaItem = item.get();
+			produtoService.atualizarQuantidade(saidaItem.getProduto().getId(), saidaItem.getQuantidade().intValue());
+			repository.deleteById(id);
     	}
         catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Falha de integridade referencial");
         }	
     	
+	}
+
+	public List<SaidaItem> findByEntityId(Long entityId) {
+		return repository.findBySaidaId(entityId);
 	}
     
     private void copyDtoToEntity(SaidaItemDTO dto, SaidaItem entity) {

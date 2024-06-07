@@ -1,14 +1,9 @@
 package gmail.davidsousalves.model;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,6 +16,9 @@ public class Entrada {
 	
 	@Column(nullable = false)
 	private LocalDateTime dataEntrada;
+
+	@Transient
+	private List<EntradaItem> itens;
 	
 	
 	public Entrada() {
@@ -53,6 +51,13 @@ public class Entrada {
 		this.dataEntrada = dataEntrada;
 	}
 
+	public void setItens(List<EntradaItem> itens) {
+		this.itens = itens;
+	}
+
+	public List<EntradaItem> getItens() {
+		return itens;
+	}
 
 	@Override
 	public int hashCode() {
