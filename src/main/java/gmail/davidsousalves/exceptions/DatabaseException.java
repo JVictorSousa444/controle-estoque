@@ -1,4 +1,4 @@
-package gmail.davidsousalves.services.exceptions;
+package gmail.davidsousalves.exceptions;
 
 @SuppressWarnings("serial")
 public class DatabaseException extends RuntimeException {

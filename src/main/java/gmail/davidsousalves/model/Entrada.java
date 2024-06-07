@@ -83,5 +83,16 @@ public class Entrada {
 			return false;
 		return true;
 	}
+
+
+	public Fornecedor getFornecedor() {
+	
+		return new Fornecedor();
+	}
+
+
+	public Produto getProduto() {
+		return new Produto();
+	}
 	
 }

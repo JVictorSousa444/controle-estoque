@@ -20,7 +20,7 @@ import gmail.davidsousalves.dto.UnidadeDTO;
 import gmail.davidsousalves.services.UnidadeService;
 
 @RestController
-@RequestMapping("/unidades")
+@RequestMapping("/api/unidades")
 public class UnidadeController {
 
 	@Autowired

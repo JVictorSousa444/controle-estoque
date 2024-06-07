@@ -11,10 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import gmail.davidsousalves.dto.SaidaItemDTO;
+import gmail.davidsousalves.exceptions.DatabaseException;
+import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.SaidaItem;
 import gmail.davidsousalves.repositories.SaidaItemRepository;
-import gmail.davidsousalves.services.exceptions.DatabaseException;
-import gmail.davidsousalves.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
