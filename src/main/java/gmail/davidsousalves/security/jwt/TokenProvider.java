@@ -12,17 +12,19 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
+import gmail.davidsousalves.exceptions.GenerateTokenException;
 import gmail.davidsousalves.security.model.usuario.User;
 
 
 @Service
 public class TokenProvider {
+	
     @Value("${api.security.token.secret}")
     private String secret;
         
     
     public String generateToken(User user){
-     
+        
     	try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
             String token = JWT.create()
@@ -34,7 +36,7 @@ public class TokenProvider {
                     .sign(algorithm);
             return token;
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Erro ao gerar token", exception);
+            throw new GenerateTokenException("Erro ao gerar token");
         }
     }
 
@@ -55,5 +57,4 @@ public class TokenProvider {
     private Instant genExpirationDate(){
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
-    
 }	

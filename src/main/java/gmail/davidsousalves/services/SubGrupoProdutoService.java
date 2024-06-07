@@ -9,9 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import gmail.davidsousalves.dto.ProdutoDTO;
 import gmail.davidsousalves.dto.SubGrupoProdutoDTO;
 import gmail.davidsousalves.exceptions.DatabaseException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
+import gmail.davidsousalves.model.Produto;
 import gmail.davidsousalves.model.SubgrupoProduto;
 import gmail.davidsousalves.repositories.SubGrupoProdutoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -44,9 +46,10 @@ public class SubGrupoProdutoService {
 	public SubGrupoProdutoDTO create(SubGrupoProdutoDTO subGrupoDto) {
 		SubgrupoProduto entity = new SubgrupoProduto();
 		copyDtoToEntity(subGrupoDto, entity);
-		entity = repository.save(entity);
+		repository.save(entity);
 		return new SubGrupoProdutoDTO(entity);
 	}
+	
 	
 	public SubGrupoProdutoDTO update(Long id ,SubGrupoProdutoDTO subGrupoDto) {
 		try {

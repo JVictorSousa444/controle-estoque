@@ -3,12 +3,12 @@ package gmail.davidsousalves.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.CONFLICT)
-public class DatabaseException extends RuntimeException {
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class GenerateTokenException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public DatabaseException(String msg) {
+	public GenerateTokenException(String msg) {
         super(msg);
     }
 }

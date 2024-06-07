@@ -30,12 +30,10 @@ public class ProdutoService {
     }
 	
 	public ProdutoDTO findById(Long id) {
-		Produto produto = repository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Id nao existe"));
-		
-		return new ProdutoDTO(produto);	
-		
-	}
+        Produto produto = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto com ID " + id + " não encontrado"));
+        return new ProdutoDTO(produto);
+    }
 	
 	public Page<ProdutoDTO> buscaPaginada(Pageable pageable) {
         return repository.findAll(pageable).map(ProdutoDTO::new);
@@ -78,7 +76,7 @@ public class ProdutoService {
 		entity.setNome(dto.nome());
 		entity.setDescricao(dto.descricao());
 		entity.setCodigo(dto.codigo());
-		entity.setGrupoproduto(dto.grupoproduto());
+		entity.setGrupoProduto(dto.grupoProduto());
 		entity.setTipoUnidade(dto.tipoUnidade());
 		entity.setFabricante(dto.fabricante());
 		entity.setLucroSugerido(dto.lucroSugerido());

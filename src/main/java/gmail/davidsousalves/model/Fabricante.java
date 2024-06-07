@@ -21,8 +21,8 @@ public class Fabricante {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank
-	@Column(nullable = false, length = 70)
+	@NotBlank(message = "O campo nome não pode ser vazio/nulo")
+	@Column(length = 70)
 	private String nome;
 	
 	@Column(length = 255)
@@ -33,15 +33,16 @@ public class Fabricante {
 	@Enumerated(EnumType.STRING)
 	private TipoDocumento documento;
 	
-	@NotBlank
-	@Column(nullable = false, length = 14, unique = true)
+	@NotBlank(message = "O campo cpf/cnpj não pode ser vazio/nulo")
+	@Column(length = 14, unique = true)
 	private String numCpfCnpj;
 	
+	@NotBlank(message = "o campo email não pode ser vazio/nulo")
 	@Email
-	@Column(nullable = false, length = 120, unique = true)
+	@Column(length = 120, unique = true)
     private String email;
 	
-	
+	@NotBlank(message = "o campo telefone não pode ser vazio/nulo")
 	@Column(nullable = false, length = 22)
 	private String telefone;
 	
@@ -51,7 +52,6 @@ public class Fabricante {
 	
 	public Fabricante(Long id,  String nome, String descricao, TipoDocumento documento,
 			 String numCpfCnpj,  String email, String telefone) {
-		super();
 		this.id = id;
 		this.nome = nome;
 		this.descricao = descricao;

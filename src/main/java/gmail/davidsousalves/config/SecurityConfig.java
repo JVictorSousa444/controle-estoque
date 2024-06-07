@@ -1,4 +1,4 @@
-package gmail.davidsousalves.config;
+  package gmail.davidsousalves.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

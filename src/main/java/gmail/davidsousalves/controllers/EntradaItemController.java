@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.EntradaItemDTO;
 import gmail.davidsousalves.services.EntradaItemService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/entrada-item")
@@ -46,7 +47,7 @@ public class EntradaItemController {
 	}
 
 	@PostMapping
-	public ResponseEntity<EntradaItemDTO> create(@RequestBody EntradaItemDTO entradaItemDto) {
+	public ResponseEntity<EntradaItemDTO> create(@Valid @RequestBody EntradaItemDTO entradaItemDto) {
 		service.create(entradaItemDto);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(entradaItemDto);

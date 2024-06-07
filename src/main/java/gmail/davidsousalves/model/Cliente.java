@@ -1,5 +1,7 @@
 package gmail.davidsousalves.model;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import gmail.davidsousalves.documentos.TipoDocumento;
@@ -13,38 +15,42 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name =  "cliente")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Cliente {
+public class Cliente implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(nullable = false ,length = 70)
+	@NotBlank(message = "O campo nome não pode ser vazio/nulo")
+	@Column(length = 70)
 	private String nome;
 	
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private TipoDocumento documento;
 	
-	
-	@Column(nullable = false, length = 25, unique = true)
+	@NotBlank(message = "o campo cpf/cnpj não pode ser vazio/nulo")
+	@Column(length = 25, unique = true)
 	private String cpfCnpj;
 	
-	
-	@Column(nullable = false, length = 120)
+	@NotBlank(message = "o campo endereco não pode ser vazio/nulo")
+	@Column(length = 120)
 	private String endereco;
 	
-	
+	@NotBlank(message = "o campo email não pode ser vazio/nulo")
     @Email
-	@Column(nullable = false, length = 100, unique = true)
+	@Column(length = 100, unique = true)
     private String email;
 	
-	
-	@Column(nullable = false, length = 20)
+	@NotBlank(message = "o campo telefone não pode ser vazio/nulo")
+	@Column(length = 20)
 	private String telefone;
 	
 	@Column(nullable = false)

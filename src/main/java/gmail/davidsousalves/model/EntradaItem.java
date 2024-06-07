@@ -2,35 +2,42 @@ package gmail.davidsousalves.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class EntradaItem {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull(message = "O campo entrada não pode ser nulo/vazia")
 	@ManyToOne
 	@JoinColumn(name = "entrada_id")
 	private Entrada entrada;
 	
-	@ManyToOne
-	@JoinColumn(name = "produto_id")
-	private Produto produto;
+	@NotNull(message = "O campo produto não pode ser nulo/vazia")
+    @ManyToOne
+    @JoinColumn(name = "produto_id")
+    private Produto produto;
 	
-	@Column(nullable = false)
-	private Long quantidade;
-	
-	@Column(nullable = false)
-	private Double valorUnitario;
+    @NotNull(message = "A quantidade não pode ser nula/vazia")
+    @Min(value = 1, message = "A quantidade deve ser maior que zero")
+    private Long quantidade;
+
+    @NotNull(message = "O valor unitário não pode ser nulo/vazia")
+    @DecimalMin(value = "0.01", message = "O valor unitário deve ser maior que zero")
+    private Double valorUnitario;
 	
 	
 	public EntradaItem() {

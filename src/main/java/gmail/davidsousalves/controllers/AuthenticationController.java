@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmail.davidsousalves.exceptions.GenerateTokenException;
 import gmail.davidsousalves.repositories.UserRepository;
 import gmail.davidsousalves.security.jwt.TokenProvider;
 import gmail.davidsousalves.security.model.usuario.AuthenticationDTO;
@@ -31,14 +32,19 @@ public class AuthenticationController {
 	@Autowired
 	private TokenProvider tokenProvider;
 
+	
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data) {
-		UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
-		Authentication auth = this.authenticationManager.authenticate(usernamePassword);
+	    try {
+	        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
+	        Authentication auth = this.authenticationManager.authenticate(usernamePassword);
 
-		String token = tokenProvider.generateToken((User) auth.getPrincipal());
+	        String token = tokenProvider.generateToken((User) auth.getPrincipal());
 
-		return ResponseEntity.ok(new LoginResponseDTO(token));
+	        return ResponseEntity.ok(new LoginResponseDTO(token));
+	    } catch (Exception e) {
+	         throw new GenerateTokenException("Erro ao criar");
+	    }
 	}
 	
 	@PostMapping("/register")

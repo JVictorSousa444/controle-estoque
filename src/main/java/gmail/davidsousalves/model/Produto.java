@@ -9,7 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,8 +23,8 @@ public class Produto {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank
-	@Column(nullable = false, length = 70, unique = true)
+	@NotBlank(message = "O campo nome não pode ser vazio/nulo")
+	@Column(length = 70, unique = true)
 	private String nome;
 	
 	@Column(nullable = false, length = 255)
@@ -33,26 +35,28 @@ public class Produto {
 	@Column(nullable = false)
 	private Long codigo;
 	
-	
+	@NotNull(message = "O campo grupo produto não pode ser nulo/vazia")
 	@ManyToOne
-	@JoinColumn(name = "grupo_produto_id", nullable = false)
-	private GrupoProduto grupoproduto;
+	@JoinColumn(name = "grupo_produto_id")
+	private GrupoProduto grupoProduto;
 	
-	
+	@NotNull(message = "O campo unidade não pode ser nulo/vazia")
 	@ManyToOne
-	@JoinColumn(name = "tipo_unidade_id", nullable = false)
+	@JoinColumn(name = "tipo_unidade_id")
 	private Unidade tipoUnidade;
 	
+	@NotNull(message = "O campo fabricante não pode ser nulo/vazia")
 	@ManyToOne
-	@JoinColumn(name = "fabricante_id", nullable = false)
+	@JoinColumn(name = "fabricante_id")
 	private Fabricante fabricante;
 	
-	
+	@NotNull(message = "O campo fornecedor não pode ser nulo/vazia")
 	@ManyToOne
-	@JoinColumn(name = "fornecedor_id", nullable = false)
+	@JoinColumn(name = "fornecedor_id")
 	private Fornecedor fornecedor;
 	
-	@Column(nullable = false)
+	@NotNull(message = "O lucro sugerido não pode ser nula/vazio")
+	@DecimalMin(value = "0.01", message = "O lucro seguerido deve ser maior que zero")
 	private Double lucroSugerido;
 	
 
@@ -66,12 +70,13 @@ public class Produto {
 		this.nome = nome;
 		this.descricao = descricao;
 		this.codigo = codigo;
-		this.grupoproduto = grupoproduto;
+		this.grupoProduto = grupoproduto;
 		this.tipoUnidade = tipoUnidade;
 		this.fabricante = fabricante;
 		this.lucroSugerido = lucroSugerido;
 		this.fornecedor = fornecedor;
 	}
+	
 
 	public Long getId() {
 		return id;
@@ -105,12 +110,12 @@ public class Produto {
 		this.codigo = codigo;
 	}
 
-	public GrupoProduto getGrupoproduto() {
-		return grupoproduto;
+	public GrupoProduto getGrupoProduto() {
+		return grupoProduto;
 	}
 
-	public void setGrupoproduto(GrupoProduto grupoproduto) {
-		this.grupoproduto = grupoproduto;
+	public void setGrupoProduto(GrupoProduto grupoProduto) {
+		this.grupoProduto = grupoProduto;
 	}
 
 	public Unidade getTipoUnidade() {
@@ -129,20 +134,20 @@ public class Produto {
 		this.fabricante = fabricante;
 	}
 
-	public Double getLucroSugerido() {
-		return lucroSugerido;
-	}
-
-	public void setLucroSugerido(Double lucroSugerido) {
-		this.lucroSugerido = lucroSugerido;
-	}
-
 	public Fornecedor getFornecedor() {
 		return fornecedor;
 	}
 
 	public void setFornecedor(Fornecedor fornecedor) {
 		this.fornecedor = fornecedor;
+	}
+
+	public Double getLucroSugerido() {
+		return lucroSugerido;
+	}
+
+	public void setLucroSugerido(Double lucroSugerido) {
+		this.lucroSugerido = lucroSugerido;
 	}
 
 	@Override

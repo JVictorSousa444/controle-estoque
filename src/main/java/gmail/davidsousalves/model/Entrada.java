@@ -1,34 +1,36 @@
 package gmail.davidsousalves.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Entrada {
+public class Entrada implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	
-	@Column(nullable = false)
-	private LocalDateTime dataEntrada;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@NotNull(message = "A data de entrada não pode ser vazia")
+    private LocalDateTime dataEntrada;
 	
 	
 	public Entrada() {
 	}
-	
 
 	public Entrada(Long id, LocalDateTime dataEntrada) {
-		super();
 		this.id = id;
 		this.dataEntrada = dataEntrada;
 	}
@@ -79,15 +81,4 @@ public class Entrada {
 		return true;
 	}
 
-
-	public Fornecedor getFornecedor() {
-	
-		return new Fornecedor();
-	}
-
-
-	public Produto getProduto() {
-		return new Produto();
-	}
-	
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,7 +21,8 @@ public class GrupoProduto implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(nullable = false, length = 100)
+	@NotBlank(message = "O campo nome não pode ser vazio/nulo")
+	@Column(length = 100)
 	private String nome;
 	
 	@Column(length = 255)

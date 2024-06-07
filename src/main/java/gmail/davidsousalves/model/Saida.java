@@ -2,15 +2,16 @@ package gmail.davidsousalves.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,15 +22,19 @@ public class Saida {
 	private Long id;
 	
 	
-	@Column(nullable = false)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@NotNull(message = "A data não pode ser vazia")
 	private LocalDateTime data;
 	
-	@Column(nullable = false)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@NotNull(message = "A data de vencimento não pode ser nulo/vazia")
 	private LocalDateTime dataVencimento;
 	
-	@Column(nullable = false)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@NotNull(message = "A data de pagamento não pode ser nulo/vazia")
 	private LocalDateTime dataPagamento;
 	
+	@NotNull(message = "O campo cliente não pode ser nulo/vazia")
 	@ManyToOne
 	@JoinColumn(name = "cliente_id", nullable = false)
 	private Cliente cliente;

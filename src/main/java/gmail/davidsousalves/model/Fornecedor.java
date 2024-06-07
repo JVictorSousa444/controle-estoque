@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -17,18 +18,18 @@ public class Fornecedor {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	
-	@Column(nullable = false, length = 70)
+	@NotBlank(message = "O campo nome não pode ser vazio/nulo")
+	@Column(length = 70)
 	private String nome;
 	
 	@Column(length = 255)
 	private String descricao;
 	
-	
-	@Column(nullable = false, length = 15)
+	@NotBlank(message = "O campo telefone não pode ser vazio/nulo")
+	@Column(length = 15)
 	private String telefone;
 	
-	
+	@NotBlank(message = "O campo email não pode ser vazio/nulo")
     @Email
 	@Column(nullable = false, length = 120)
 	private String email;
