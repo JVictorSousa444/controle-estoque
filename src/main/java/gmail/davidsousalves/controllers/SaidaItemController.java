@@ -20,7 +20,7 @@ import gmail.davidsousalves.dto.SaidaItemDTO;
 import gmail.davidsousalves.services.SaidaItemService;
 
 @RestController
-@RequestMapping("/saidas-itens")
+@RequestMapping("/api/saida-item")
 public class SaidaItemController {
 	
 	@Autowired

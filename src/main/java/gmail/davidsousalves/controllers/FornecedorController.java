@@ -20,7 +20,7 @@ import gmail.davidsousalves.dto.FornecedorDTO;
 import gmail.davidsousalves.services.FornecedorService;
 
 @RestController
-@RequestMapping("/fornecedores")
+@RequestMapping("/api/fornecedor")
 public class FornecedorController {
 
 	@Autowired

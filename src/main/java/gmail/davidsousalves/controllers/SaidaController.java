@@ -21,7 +21,7 @@ import gmail.davidsousalves.dto.SaidaDTO;
 import gmail.davidsousalves.services.SaidaService;
 
 @RestController
-@RequestMapping("/saidas")
+@RequestMapping("/api/saida")
 public class SaidaController {
 
 	@Autowired

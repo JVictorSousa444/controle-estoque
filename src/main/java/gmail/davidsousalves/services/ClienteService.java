@@ -27,12 +27,10 @@ public class ClienteService {
 
 
 	public List<ClienteDTO> buscaClienteNomeStatus(String nome, StatusCliente status) {
-
-		List<Cliente> clientes = clienteRepository.findByNomeAndStatus(nome, status);
-
-		return clientes.stream().map(cliente -> copyEntitytoDto(cliente)).collect(Collectors.toList());
-
+	    List<Cliente> clientes = clienteRepository.findByNomeAndStatus(nome, status != null ? status : null);
+	    return clientes.stream().map(cliente -> copyEntitytoDto(cliente)).collect(Collectors.toList());
 	}
+
 
 	public List<ClienteDTO> findAll() {
 		List<Cliente> clientes = clienteRepository.findAll();

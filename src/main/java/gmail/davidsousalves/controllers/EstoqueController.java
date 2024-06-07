@@ -20,7 +20,7 @@ import gmail.davidsousalves.dto.EstoqueDTO;
 import gmail.davidsousalves.services.EstoqueService;
 
 @RestController
-@RequestMapping("/estoque")
+@RequestMapping("/api/estoque")
 public class EstoqueController {
 
 	@Autowired
