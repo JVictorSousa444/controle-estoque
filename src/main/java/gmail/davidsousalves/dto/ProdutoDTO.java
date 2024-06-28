@@ -7,12 +7,11 @@ import gmail.davidsousalves.model.Produto;
 import gmail.davidsousalves.model.Unidade;
 
 
-public record ProdutoDTO(String nome, String descricao, Long codigo, GrupoProduto grupoProduto, Unidade tipoUnidade,
-		Fabricante fabricante, Double lucroSugerido, Fornecedor fornecedor) {
+public record ProdutoDTO(Long id, String nome, String descricao, Long codigo, GrupoProduto grupoProduto, Unidade tipoUnidade,
+		Fabricante fabricante, Double lucroSugerido) {
 
 	public ProdutoDTO(Produto entity) {
-        this(entity.getNome(), entity.getDescricao(), entity.getCodigo(), entity.getGrupoProduto(), entity.getTipoUnidade(),
-        		entity.getFabricante(), entity.getLucroSugerido(), entity.getFornecedor());
-    }
-}
-
+        this(entity.getId(), entity.getNome(), entity.getDescricao(), entity.getCodigo(), entity.getGrupoProduto(), entity.getTipoUnidade(),
+        		entity.getFabricante(), entity.getLucroSugerido());
+	
+	}}

@@ -27,7 +27,7 @@ public class FornecedorController {
 	private FornecedorService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<FornecedorDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<FornecedorDTO>> buscarTodos() {
 		List<FornecedorDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -38,17 +38,18 @@ public class FornecedorController {
 		return ResponseEntity.ok(dto);
 	}
 	
-	@GetMapping("/fornecedor-paginados")
-	public ResponseEntity<Page<FornecedorDTO>> buscaPaginada(Pageable pageable) {
-	    Page<FornecedorDTO> fornecedorDTOPage = service.buscaPaginada(pageable);
+	@GetMapping()
+	public ResponseEntity<Page<FornecedorDTO>> buscaPaginada(String nome, Pageable pageable) {
+	    Page<FornecedorDTO> fornecedorDTOPage = service.buscaPaginada(nome, pageable);
 	    return ResponseEntity.ok(fornecedorDTOPage);
 	}
 
 	@PostMapping
 	public ResponseEntity<FornecedorDTO> create(@RequestBody FornecedorDTO fornecedorDto) {
-		service.create(fornecedorDto);
+		
+		FornecedorDTO createFornecedor = service.create(fornecedorDto);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(fornecedorDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createFornecedor);
 	}
 
 	@PutMapping("/{id}")

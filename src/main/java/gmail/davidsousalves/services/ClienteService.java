@@ -1,5 +1,6 @@
 package gmail.davidsousalves.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,12 +10,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import gmail.davidsousalves.documentos.TipoDocumento;
 import gmail.davidsousalves.dto.ClienteDTO;
 import gmail.davidsousalves.exceptions.DatabaseException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.Cliente;
-import gmail.davidsousalves.model.StatusCliente;
+import gmail.davidsousalves.model.Status;
 import gmail.davidsousalves.repositories.ClienteRepository;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -24,7 +27,7 @@ public class ClienteService {
 	private ClienteRepository clienteRepository;
 
 
-	public List<ClienteDTO> buscaClienteNomeStatus(String nome, StatusCliente status) {
+	public List<ClienteDTO> buscaClienteNomeStatus(String nome, Status status) {
 	    List<Cliente> clientes = clienteRepository.findByNomeAndStatus(nome, status != null ? status : null);
 	    return clientes.stream().map(cliente -> copyEntitytoDto(cliente)).collect(Collectors.toList());
 	}
@@ -35,11 +38,13 @@ public class ClienteService {
 		return clientes.stream().map(cliente -> copyEntitytoDto(cliente)).collect(Collectors.toList());
 	}
 
-	public Page<ClienteDTO> buscaPaginada(Pageable pageable) {
-        return clienteRepository.findAll(pageable).map(ClienteDTO::fromCliente);
+	public Page<ClienteDTO> buscaPaginada(String nome, Pageable pageable) {
+		if (StringUtils.isEmpty(nome)) {
+        	return clienteRepository.findAll(pageable).map(ClienteDTO::new);
+		} else {
+			return clienteRepository.findByNomeContainingIgnoreCase(nome, pageable).map(ClienteDTO::new);
+		}
     }
-
-
 
 	public ClienteDTO findById(Long id) {
 		Cliente cliente = clienteRepository.findById(id).orElseThrow(
@@ -81,18 +86,30 @@ public class ClienteService {
 	}
 
 	private void copyDtoToEntity(ClienteDTO dto, Cliente entity) {
+	    entity.setId(dto.id());
 		entity.setNome(dto.nome());
-		entity.setCpfCnpj(dto.cpfCnpj());
-		entity.setDocumento(dto.documento());
-		entity.setEmail(dto.email());
-		entity.setEndereco(dto.endereco());
-		entity.setStatus(dto.status());
-		entity.setTelefone(dto.telefone());
-
+	    entity.setCpfCnpj(dto.cpfCnpj());
+	    entity.setDocumento(dto.documento());
+	    entity.setEmail(dto.email());
+	    entity.setEndereco(dto.endereco());
+	    entity.setStatus(dto.status());
+	    entity.setTelefones(new ArrayList<>(dto.telefones()));
+	    entity.setDocumento(buscarTipoDocumento(dto));
+	    entity.setBairro(dto.bairro());
+	    entity.setCidade(dto.cidade());
 	}
+
 
 	private ClienteDTO copyEntitytoDto(Cliente cliente) {
 		ClienteDTO dto = new ClienteDTO(cliente);
 		return dto;
+	}
+
+	private TipoDocumento buscarTipoDocumento(ClienteDTO clienteDTO) {
+		if (clienteDTO == null || StringUtils.isEmpty(clienteDTO.cpfCnpj())) {
+			return null;
+		}
+
+		return clienteDTO.cpfCnpj().length() > 11 ? TipoDocumento.CNPJ : TipoDocumento.CPF;
 	}
 }

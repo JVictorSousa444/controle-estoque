@@ -1,6 +1,7 @@
 package gmail.davidsousalves.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import gmail.davidsousalves.exceptions.DatabaseException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.Produto;
 import gmail.davidsousalves.repositories.ProdutoRepository;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -35,13 +37,18 @@ public class ProdutoService {
         return new ProdutoDTO(produto);
     }
 	
-	public Page<ProdutoDTO> buscaPaginada(Pageable pageable) {
-        return repository.findAll(pageable).map(ProdutoDTO::new);
+	public Page<ProdutoDTO> buscaPaginada(String nome, Pageable pageable) {
+		if (StringUtils.isEmpty(nome)) {
+        	return repository.findAll(pageable).map(ProdutoDTO::new);
+		} else {
+			return repository.findByNomeContainingIgnoreCase(nome, pageable).map(ProdutoDTO::new);
+		}
     }
 
     public ProdutoDTO create(ProdutoDTO produtoDto) {
     	Produto entity = new Produto();
 		copyDtoToEntity(produtoDto, entity);
+		entity.setQuantidade(0);
 		entity = repository.save(entity);
 		return new ProdutoDTO(entity);
     
@@ -71,6 +78,23 @@ public class ProdutoService {
         }	
     	
 	}
+
+	public void atualizarQuantidade(Long id, Integer quantidade) {
+		repository.atualizarQuantidade(id, quantidade);
+	}
+
+	public void atualizarQuantidadeRemover(Long id, Integer quantidade) {
+		Optional<Produto> produto = repository.findById(id);
+
+		if (produto.isPresent()) {
+			if (produto.get().getQuantidade().compareTo(quantidade) < 0) {
+				throw new RuntimeException(produto.get().getNome() +
+						" com quantidade insuficiente para saida. Quantidade solicitada: " + quantidade +
+						". Quantidade em estoque: " + produto.get().getQuantidade());
+			}
+			repository.atualizarQuantidadeRemover(id, quantidade);
+		}
+	}
     
     private void copyDtoToEntity(ProdutoDTO dto, Produto entity) {
 		entity.setNome(dto.nome());
@@ -80,7 +104,6 @@ public class ProdutoService {
 		entity.setTipoUnidade(dto.tipoUnidade());
 		entity.setFabricante(dto.fabricante());
 		entity.setLucroSugerido(dto.lucroSugerido());
-		entity.setFornecedor(dto.fornecedor());
 	}
     
     private ProdutoDTO copyEntitytoDto(Produto produto) {

@@ -28,7 +28,7 @@ public class FabricanteController {
 	
 	
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<FabricanteDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<FabricanteDTO>> buscarTodos() {
 		List<FabricanteDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -48,8 +48,8 @@ public class FabricanteController {
 
 	@PostMapping
 	public ResponseEntity<FabricanteDTO> create(@RequestBody FabricanteDTO fabricanteDto) {
-		service.create(fabricanteDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(fabricanteDto);
+		FabricanteDTO createFabricante = service.create(fabricanteDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createFabricante);
 	}
 
 	@PutMapping("/{id}")

@@ -14,7 +14,6 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class EntradaItem {
 
 	@Id

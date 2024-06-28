@@ -1,6 +1,6 @@
 package gmail.davidsousalves.model;
 
-public enum StatusCliente {
+public enum Status {
 
 	 ATIVO,
     INATIVO 

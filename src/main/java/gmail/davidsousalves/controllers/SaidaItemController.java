@@ -27,7 +27,7 @@ public class SaidaItemController {
 	private SaidaItemService service;
 	
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<SaidaItemDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<SaidaItemDTO>> buscarTodos() {
 		List<SaidaItemDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -46,8 +46,8 @@ public class SaidaItemController {
 
 	@PostMapping
 	public ResponseEntity<SaidaItemDTO> create(@RequestBody SaidaItemDTO saidaItemDto) {
-		service.create(saidaItemDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(saidaItemDto);
+		SaidaItemDTO createSaidaItem = service.create(saidaItemDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createSaidaItem);
 	}
 
 	@PutMapping("/{id}")
@@ -59,7 +59,7 @@ public class SaidaItemController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		service.findById(id);
+		service.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 }

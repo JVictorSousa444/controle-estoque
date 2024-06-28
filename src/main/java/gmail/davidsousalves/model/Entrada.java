@@ -2,6 +2,7 @@ package gmail.davidsousalves.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -25,6 +27,9 @@ public class Entrada implements Serializable{
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@NotNull(message = "A data de entrada não pode ser vazia")
     private LocalDateTime dataEntrada;
+
+	@Transient
+	private List<EntradaItem> itens;
 	
 	
 	public Entrada() {
@@ -55,6 +60,13 @@ public class Entrada implements Serializable{
 		this.dataEntrada = dataEntrada;
 	}
 
+	public void setItens(List<EntradaItem> itens) {
+		this.itens = itens;
+	}
+
+	public List<EntradaItem> getItens() {
+		return itens;
+	}
 
 	@Override
 	public int hashCode() {

@@ -28,7 +28,7 @@ public class EntradaItemController {
 	private EntradaItemService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<EntradaItemDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<EntradaItemDTO>> buscarTodos() {
 		List<EntradaItemDTO> entradaItemDTO = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(entradaItemDTO);
 	}

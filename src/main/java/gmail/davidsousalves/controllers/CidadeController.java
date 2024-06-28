@@ -16,47 +16,47 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import gmail.davidsousalves.dto.EstoqueDTO;
-import gmail.davidsousalves.services.EstoqueService;
+import gmail.davidsousalves.dto.CidadeDTO;
+import gmail.davidsousalves.services.CidadeService;
 
 @RestController
-@RequestMapping("/api/estoque")
-public class EstoqueController {
+@RequestMapping("api/cidades")
+public class CidadeController {
 
 	@Autowired
-	private EstoqueService service;
+	private CidadeService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<EstoqueDTO>> buscarTodos() {
-		List<EstoqueDTO> estoqueDTO = service.findAll();
-		return ResponseEntity.status(HttpStatus.OK).body(estoqueDTO);
+	public ResponseEntity<List<CidadeDTO>> buscarTodos() {
+		List<CidadeDTO> cidadeDTO = service.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(cidadeDTO);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<EstoqueDTO> findById(@PathVariable Long id) {
-		EstoqueDTO dto = service.findById(id);
+	public ResponseEntity<CidadeDTO> findById(@PathVariable Long id) {
+		CidadeDTO dto = service.findById(id);
 		return ResponseEntity.ok(dto);
 	}
 	
 	@GetMapping("/estoque-paginados")
-	public ResponseEntity<Page<EstoqueDTO>> buscaPaginada(Pageable pageable) {
-	    Page<EstoqueDTO> estoqueDTOPage = service.buscaPaginada(pageable);
-	    return ResponseEntity.ok(estoqueDTOPage);
+	public ResponseEntity<Page<CidadeDTO>> buscaPaginada(Pageable pageable) {
+	    Page<CidadeDTO> cidadeDTOPage = service.buscaPaginada(pageable);
+	    return ResponseEntity.ok(cidadeDTOPage);
 	}
 
 	@PostMapping
-	public ResponseEntity<EstoqueDTO> create(@RequestBody EstoqueDTO estoqueDto) {
+	public ResponseEntity<CidadeDTO> create(@RequestBody CidadeDTO cidadeDTO) {
 		
-		EstoqueDTO createEstoque = service.create(estoqueDto);
+		CidadeDTO createCidade = service.create(cidadeDTO);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(createEstoque);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createCidade);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<EstoqueDTO> update(@PathVariable Long id, @RequestBody EstoqueDTO estoqueDto) {
-		service.update(id, estoqueDto);
+	public ResponseEntity<CidadeDTO> update(@PathVariable Long id, @RequestBody CidadeDTO cidadeDTO) {
+		service.update(id, cidadeDTO);
 
-		return ResponseEntity.ok(estoqueDto);
+		return ResponseEntity.ok(cidadeDTO);
 
 	}
 

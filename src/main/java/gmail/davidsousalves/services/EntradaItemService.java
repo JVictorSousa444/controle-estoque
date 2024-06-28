@@ -2,25 +2,28 @@ package gmail.davidsousalves.services;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import gmail.davidsousalves.dto.EntradaItemDTO;
 import gmail.davidsousalves.exceptions.DatabaseException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.EntradaItem;
 import gmail.davidsousalves.repositories.EntradaItemRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EntradaItemService {
 
 	@Autowired
 	private EntradaItemRepository repository;
+
+	@Autowired
+	private ProdutoService produtoService;
 
 	public List<EntradaItemDTO> findAll() {
 		List<EntradaItem> entradaItems = repository.findAll();
@@ -44,6 +47,21 @@ public class EntradaItemService {
 		copyDtoToEntity(entradaItemDto, entity);
 		entity = repository.save(entity);
 		return new EntradaItemDTO(entity);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	public List<EntradaItem>  create(List<EntradaItem> itens) {
+		List<EntradaItem> entradaItems = repository.saveAll(itens);
+		for(EntradaItem entradaItem : entradaItems) {
+			Long idProduto = entradaItem.getProduto().getId();
+			Long quantidade = entradaItem.getQuantidade();
+			produtoService.atualizarQuantidade(idProduto, quantidade != null ? quantidade.intValue() : 0);
+		}
+		return entradaItems;
+	}
+
+	public List<EntradaItem> findByEntityId(Long entityId) {
+		return repository.findByEntradaId(entityId);
 	}
 
 	public EntradaItemDTO update(Long id, EntradaItemDTO entradaItemDto) {

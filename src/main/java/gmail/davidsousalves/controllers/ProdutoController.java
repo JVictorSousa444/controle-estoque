@@ -27,7 +27,7 @@ public class ProdutoController {
 	private ProdutoService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<ProdutoDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<ProdutoDTO>> buscarTodos() {
 		List<ProdutoDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -38,17 +38,18 @@ public class ProdutoController {
 		return ResponseEntity.ok(dto);
 	}
 	
-	@GetMapping("/produto-paginados")
-	public ResponseEntity<Page<ProdutoDTO>> buscaPaginada(Pageable pageable) {
-	    Page<ProdutoDTO> produtoDTOPage = service.buscaPaginada(pageable);
+	@GetMapping()
+	public ResponseEntity<Page<ProdutoDTO>> buscaPaginada(String nome, Pageable pageable) {
+	    Page<ProdutoDTO> produtoDTOPage = service.buscaPaginada(nome, pageable);
 	    return ResponseEntity.ok(produtoDTOPage);
 	}
 
 	@PostMapping
 	public ResponseEntity<ProdutoDTO> createProduto(@RequestBody ProdutoDTO produtoDto) {
-		service.create(produtoDto);
+		
+		ProdutoDTO createProduto =  service.create(produtoDto);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(produtoDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createProduto);
 	}
 
 	@PutMapping("/{id}")

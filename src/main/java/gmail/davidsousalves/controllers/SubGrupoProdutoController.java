@@ -27,7 +27,7 @@ public class SubGrupoProdutoController {
 	private SubGrupoProdutoService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<SubGrupoProdutoDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<SubGrupoProdutoDTO>> buscarTodos() {
 		List<SubGrupoProdutoDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -46,9 +46,10 @@ public class SubGrupoProdutoController {
 
 	@PostMapping
 	public ResponseEntity<SubGrupoProdutoDTO> create(@RequestBody SubGrupoProdutoDTO subGrupoProduto) {
-		service.create(subGrupoProduto);
+		
+		SubGrupoProdutoDTO createSubGrupoProduto = service.create(subGrupoProduto);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(subGrupoProduto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createSubGrupoProduto);
 	}
 
 	@PutMapping("/{id}")

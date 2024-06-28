@@ -14,6 +14,7 @@ import gmail.davidsousalves.exceptions.DatabaseException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.Fornecedor;
 import gmail.davidsousalves.repositories.FornecedorRepository;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -29,8 +30,12 @@ public class FornecedorService {
                 .collect(Collectors.toList());
     }
 	
-	public Page<FornecedorDTO> buscaPaginada(Pageable pageable) {
-        return repository.findAll(pageable).map(FornecedorDTO::new);
+	public Page<FornecedorDTO> buscaPaginada(String nome, Pageable pageable) {
+		if (StringUtils.isEmpty(nome)) {
+        	return repository.findAll(pageable).map(FornecedorDTO::new);
+		} else {
+			return repository.findByNomeContainingIgnoreCase(nome, pageable).map(FornecedorDTO::new);
+		}
     }
 
 	public FornecedorDTO findById(Long id) {
@@ -80,7 +85,11 @@ public class FornecedorService {
 		entity.setDescricao(dto.descricao());
 		entity.setEmail(dto.email());
 		entity.setTelefone(dto.telefone());
-
+		entity.setBairro(dto.bairro());
+		entity.setCnpj(dto.cnpj());
+		entity.setCep(dto.cep());
+		entity.setDataCadastro(dto.dataCadastro());
+		entity.setStatus(dto.status());
 	}
     
     private FornecedorDTO copyEntitytoDto(Fornecedor fornecedor) {

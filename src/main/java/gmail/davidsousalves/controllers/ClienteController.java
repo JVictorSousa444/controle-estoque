@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.ClienteDTO;
-import gmail.davidsousalves.model.StatusCliente;
+import gmail.davidsousalves.model.Status;
 import gmail.davidsousalves.services.ClienteService;
 import jakarta.validation.Valid;
 
@@ -31,7 +31,7 @@ public class ClienteController {
 
 	//@PreAuthorize("hasRole('USER')")
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<ClienteDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<ClienteDTO>> buscarTodos() {
 		List<ClienteDTO> clientesDTO = clienteService.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(clientesDTO);
 	}
@@ -39,14 +39,14 @@ public class ClienteController {
 	@GetMapping("/busca")
 	public ResponseEntity<List<ClienteDTO>> buscaClienteNomeStatus(
             @RequestParam String nome,
-            @RequestParam(required = false) StatusCliente status) {
+            @RequestParam(required = false) Status status) {
         List<ClienteDTO> clientes = clienteService.buscaClienteNomeStatus(nome, status);
         return ResponseEntity.ok(clientes);
     }
 
-	@GetMapping("/clientes-paginados")
-	public ResponseEntity<Page<ClienteDTO>> buscaPaginada(Pageable pageable) {
-	    Page<ClienteDTO> clienteDTOPage = clienteService.buscaPaginada(pageable);
+	@GetMapping
+	public ResponseEntity<Page<ClienteDTO>> buscaPaginada(String nome, Pageable pageable) {
+	    Page<ClienteDTO> clienteDTOPage = clienteService.buscaPaginada(nome, pageable);
 	    return ResponseEntity.ok(clienteDTOPage);
 	}
 
@@ -58,11 +58,11 @@ public class ClienteController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ClienteDTO> createCliente(@Valid @RequestBody ClienteDTO cliente) {
+	public ResponseEntity<ClienteDTO> createCliente(@Valid @RequestBody ClienteDTO clienteDTO) {
 
-		clienteService.create(cliente);
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(cliente);
+		ClienteDTO createdCliente = clienteService.create(clienteDTO);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdCliente);
 	}
 
 	@PutMapping("/{id}")

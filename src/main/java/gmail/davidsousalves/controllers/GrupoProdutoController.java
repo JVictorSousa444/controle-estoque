@@ -27,7 +27,7 @@ public class GrupoProdutoController {
 	private GrupoProdutoService service;
 	
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<GrupoProdutoDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<GrupoProdutoDTO>> buscarTodos() {
 		List<GrupoProdutoDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -38,7 +38,7 @@ public class GrupoProdutoController {
 		return ResponseEntity.ok(grupoProdutoDto);
 	}
 	
-	@GetMapping("/grupo-produto-paginados")
+	@GetMapping()
 	public ResponseEntity<Page<GrupoProdutoDTO>> buscaPaginada(Pageable pageable) {
 	    Page<GrupoProdutoDTO> grupoProdutoDTOPage = service.buscaPaginada(pageable);
 	    return ResponseEntity.ok(grupoProdutoDTOPage);
@@ -47,9 +47,9 @@ public class GrupoProdutoController {
 	@PostMapping
 	public ResponseEntity<GrupoProdutoDTO> create(@RequestBody GrupoProdutoDTO grupoprodutoDto) {
 		
-		service.create(grupoprodutoDto);
+		GrupoProdutoDTO createGrupoProduto = service.create(grupoprodutoDto);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(grupoprodutoDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createGrupoProduto);
 	}
 
 	@PutMapping("/{id}")
