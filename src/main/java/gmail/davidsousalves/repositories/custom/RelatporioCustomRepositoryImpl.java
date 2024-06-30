@@ -170,6 +170,73 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
         return resultado != null ? ((Number) resultado).intValue() : 0 ;
     }
 
+    public Page<RelatorioDTO> produtos(RelatorioFiltroDTO filtro, Pageable pageable) {
+        StringBuilder sql = new StringBuilder();
+        String consultaBase = criarConsultaBasicaProdutos(filtro);
+        sql.append(consultaBase);
+
+        List<RelatorioDTO> result = getResult(sql.toString(), filtro, pageable);
+
+        return new PageImpl<>(result, pageable, getResultCount(consultaBase, filtro));
+    }
+
+    private String criarConsultaBasicaProdutos(RelatorioFiltroDTO filtro) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" ");
+        sql.append(" SELECT ");
+        sql.append(" p.id AS id, ");
+        sql.append(" p.nome AS produto, ");
+        sql.append(" COALESCE(ei.total_quantidade_entrada, 0) AS qtdEntrada, ");
+        sql.append(" COALESCE(si.total_quantidade_saida, 0) AS qtdSaida, ");
+        sql.append(" COALESCE(ei.media_valor_entrada, 0) AS precoMedioEntrada, ");
+        sql.append(" COALESCE(si.media_valor_saida, 0) AS precoMedioSaida, ");
+        sql.append(" p.quantidade AS qtdAtual ");
+        sql.append(" FROM        public.produto p ");
+        sql.append(" LEFT JOIN ");
+        sql.append(" (SELECT ");
+        sql.append(" entrada_item.produto_id, ");
+        sql.append(" SUM(entrada_item.quantidade) AS total_quantidade_entrada, ");
+        sql.append(" AVG(entrada_item.valor_unitario) AS media_valor_entrada ");
+        sql.append(" FROM ");
+        sql.append(" public.entrada e ");
+        sql.append(" join public.entrada_item on e.id = entrada_id ");
+        sql.append("WHERE 1 = 1 ");
+        if (filtro.getDataInicio() != null && filtro.getDataFim() != null) {
+            SqlUtils.addParam(sql, filtro.getDataInicio(), " AND e.data_entrada between :dataInicio ");
+            SqlUtils.addParam(sql, filtro.getDataFim(), " AND :dataFim ");
+        } else if (filtro.getDataInicio() != null ) {
+            SqlUtils.addParam(sql, filtro.getDataInicio(), " AND e.data_entrada >= :dataInicio ");
+        } else if (filtro.getDataFim() != null) {
+            SqlUtils.addParam(sql, filtro.getDataFim(), " AND e.data_entrada <= :dataFim ");
+        }
+        sql.append(" GROUP BY        entrada_item.produto_id ) ei ON p.id = ei.produto_id ");
+
+        sql.append(" LEFT JOIN ");
+        sql.append(" (SELECT ");
+        sql.append(" saida_item.produto_id, ");
+        sql.append(" SUM(saida_item.quantidade) AS total_quantidade_saida, ");
+        sql.append(" AVG(saida_item.valor_unitario) AS media_valor_saida ");
+        sql.append(" FROM saida s");
+        sql.append(" join public.saida_item on s.id = saida_id ");
+        sql.append("WHERE 1 = 1 ");
+        if (filtro.getDataInicio() != null && filtro.getDataFim() != null) {
+            SqlUtils.addParam(sql, filtro.getDataInicio(), " AND s.data between :dataInicio ");
+            SqlUtils.addParam(sql, filtro.getDataFim(), " AND :dataFim ");
+        } else if (filtro.getDataInicio() != null ) {
+            SqlUtils.addParam(sql, filtro.getDataInicio(), " AND s.data >= :dataInicio ");
+        } else if (filtro.getDataFim() != null) {
+            SqlUtils.addParam(sql, filtro.getDataFim(), " AND s.data <= :dataFim ");
+        }
+
+        sql.append(" GROUP BY        saida_item.produto_id ) si ON p.id = si.produto_id ");
+
+        sql.append("WHERE 1 = 1 ");
+        SqlUtils.addParam(sql, filtro.getProduto(), " AND p.id = :idProduto ");
+        sql.append(" ORDER BY        p.nome  ");
+
+        return sql.toString();
+    }
+
     private String criarConsultaBasicaContasAReceber(RelatorioFiltroDTO filtro) {
         StringBuilder sql = new StringBuilder();
         sql.append(" ");
@@ -288,6 +355,7 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
 
         SqlUtils.setParam(query, filtro.getCliente(), "idCliente");
         SqlUtils.setParam(query, filtro.getFornecedor(), "idFornecedor");
+        SqlUtils.setParam(query, filtro.getProduto(), "idProduto");
         SqlUtils.setParam(query, filtro.getDataInicio(), "dataInicio");
         SqlUtils.setParam(query, DataUtils.ajustarDataParaFimDoDia(filtro.getDataFim()), "dataFim");
         SqlUtils.setParam(query, filtro.getDataVencimentoInicio(), "dataVencimentoInicio");
@@ -314,6 +382,7 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
 
         SqlUtils.setParam(query, filtro.getCliente(), "idCliente");
         SqlUtils.setParam(query, filtro.getFornecedor(), "idFornecedor");
+        SqlUtils.setParam(query, filtro.getProduto(), "idProduto");
         SqlUtils.setParam(query, filtro.getDataInicio(), "dataInicio");
         SqlUtils.setParam(query, DataUtils.ajustarDataParaFimDoDia(filtro.getDataFim()), "dataFim");
         SqlUtils.setParam(query, filtro.getDataVencimentoInicio(), "dataVencimentoInicio");

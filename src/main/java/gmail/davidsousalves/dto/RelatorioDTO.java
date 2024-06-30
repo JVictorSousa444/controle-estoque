@@ -27,4 +27,10 @@ public class RelatorioDTO {
     private Double valorTotalSaida;
     private String produto;
     private Long quantidade;
+    private Long qtdAtual;
+    private Long qtdEntrada;
+    private Long qtdSaida;
+    private Double precoMedioEntrada;
+    private Double precoMedioSaida;
+
 }

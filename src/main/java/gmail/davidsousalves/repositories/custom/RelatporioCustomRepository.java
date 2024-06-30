@@ -23,4 +23,6 @@ public interface RelatporioCustomRepository {
 
     Integer quantidadeContasAReceberVencidas(RelatorioFiltroDTO filtro);
 
+    Page<RelatorioDTO> produtos(RelatorioFiltroDTO filtro, Pageable pageable);
+
 }

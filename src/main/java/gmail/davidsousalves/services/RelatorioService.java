@@ -24,6 +24,10 @@ public class RelatorioService {
         return relatporioCustomRepository.buscarContasAPagar(filtro, pageable);
     }
 
+    public Page<RelatorioDTO> produtos(RelatorioFiltroDTO filtro, Pageable pageable) {
+        return relatporioCustomRepository.produtos(filtro, pageable);
+    }
+
     public List<RelatorioDTO> buscarTotalEntradaESaidaPorMes(RelatorioFiltroDTO filtro) {
         return relatporioCustomRepository.buscarTotalEntradaESaidaPorMes(filtro);
     }
