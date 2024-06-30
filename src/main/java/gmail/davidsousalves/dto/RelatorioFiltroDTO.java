@@ -22,4 +22,6 @@ public class RelatorioFiltroDTO {
     private Date dataVencimentoFim;
 
     private TipoRelatorio tipoRelatorio;
+
+    private String diasAVencer;
 }

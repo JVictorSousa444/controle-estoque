@@ -1,5 +1,6 @@
 package gmail.davidsousalves.repositories.custom;
 
+import gmail.davidsousalves.converter.TransformerTupleToDTO;
 import gmail.davidsousalves.dto.RelatorioDTO;
 import gmail.davidsousalves.dto.RelatorioFiltroDTO;
 import gmail.davidsousalves.dto.TipoRelatorio;
@@ -31,6 +32,142 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
         List<RelatorioDTO> result = getResult(sql.toString(), filtro, pageable);
 
         return new PageImpl<>(result, pageable, getResultCount(consultaBase, filtro));
+    }
+
+    @Override
+    public Page<RelatorioDTO> buscarContasAPagar(RelatorioFiltroDTO filtro, Pageable pageable) {
+        StringBuilder sql = new StringBuilder();
+        String consultaBase = criarConsultaBasicaContasAPagar(filtro);
+        sql.append(consultaBase);
+
+        List<RelatorioDTO> result = getResult(sql.toString(), filtro, pageable);
+
+        return new PageImpl<>(result, pageable, getResultCount(consultaBase, filtro));
+    }
+
+    @Override
+    public List<RelatorioDTO> buscarTotalEntradaESaidaPorMes(RelatorioFiltroDTO filtro) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" ");
+
+        sql.append(" WITH entrada_totais AS ( ");
+        sql.append(" SELECT ");
+        sql.append(" DATE_TRUNC('month', e.data_entrada) AS mes, ");
+        sql.append(" SUM(ei.quantidade * ei.valor_unitario) AS valor_total_entrada ");
+        sql.append(" FROM ");
+        sql.append(" public.entrada e ");
+        sql.append(" LEFT JOIN        public.entrada_item ei ON e.id = ei.entrada_id ");
+        sql.append(" WHERE ");
+        sql.append(" EXTRACT(YEAR FROM e.data_entrada) = EXTRACT(YEAR FROM CURRENT_DATE) ");
+        sql.append(" GROUP BY  DATE_TRUNC('month', e.data_entrada) ");
+        sql.append(" ),  saida_totais AS ( ");
+        sql.append(" SELECT ");
+        sql.append(" DATE_TRUNC('month', s.data) AS mes, ");
+        sql.append(" SUM(si.quantidade * si.valor_unitario) AS valor_total_saida ");
+        sql.append(" FROM ");
+        sql.append(" public.saida s ");
+        sql.append(" LEFT JOIN        public.saida_item si ON s.id = si.saida_id ");
+        sql.append(" WHERE ");
+        sql.append(" EXTRACT(YEAR FROM s.data) = EXTRACT(YEAR FROM CURRENT_DATE) ");
+        sql.append(" GROUP BY  DATE_TRUNC('month', s.data) ");
+        sql.append(" ) ");
+        sql.append(" SELECT ");
+        sql.append(" COALESCE(TO_CHAR(e.mes, 'YYYY-MM'), TO_CHAR(s.mes, 'YYYY-MM')) AS mes, ");
+        sql.append(" COALESCE(e.valor_total_entrada, 0) AS valorTotalEntrada, ");
+        sql.append(" COALESCE(s.valor_total_saida, 0) AS valorTotalSaida ");
+        sql.append(" FROM (SELECT mes FROM entrada_totais   UNION  SELECT mes FROM saida_totais) AS meses ");
+        sql.append(" LEFT JOIN entrada_totais e ON meses.mes = e.mes ");
+        sql.append(" LEFT JOIN saida_totais s ON meses.mes = s.mes ");
+        sql.append(" ORDER BY mes; ");
+
+        return getResult(sql.toString(), filtro, null);
+    }
+
+    @Override
+    public List<RelatorioDTO> rankQuantidadeDeProdutosVendidosNoMes(RelatorioFiltroDTO filtro) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" ");
+
+        sql.append(" WITH vendasPorMes AS ( ");
+        sql.append(" SELECT ");
+        sql.append(" p.id AS produto_id, ");
+        sql.append(" p.nome AS produto_nome, ");
+        sql.append(" DATE_TRUNC('month', s.data) AS mes, ");
+        sql.append(" SUM(si.quantidade) AS total_quantidade_saida ");
+        sql.append(" FROM public.produto p ");
+        sql.append(" JOIN public.saida_item si ON p.id = si.produto_id ");
+        sql.append(" JOIN public.saida s ON si.saida_id = s.id ");
+        sql.append(" WHERE ");
+        sql.append(" EXTRACT(YEAR FROM s.data) = EXTRACT(YEAR FROM CURRENT_DATE) ");
+        sql.append(" GROUP BY        p.id, p.nome, DATE_TRUNC('month', s.data) ");
+        sql.append(" ) ");
+        sql.append(" SELECT ");
+        sql.append(" TO_CHAR(mes, 'YYYY-MM') mes, ");
+        sql.append(" produto_id, ");
+        sql.append(" produto_nome produto, ");
+        sql.append(" total_quantidade_saida quantidade ");
+        sql.append(" FROM ( ");
+        sql.append(" SELECT ");
+        sql.append(" mes, ");
+        sql.append(" produto_id, ");
+        sql.append(" produto_nome, ");
+        sql.append(" total_quantidade_saida, ");
+        sql.append(" ROW_NUMBER() OVER (PARTITION BY mes ORDER BY total_quantidade_saida DESC) AS rank ");
+        sql.append(" FROM vendasPorMes ");
+        sql.append(" ) t ");
+        sql.append("  WHERE ");
+        sql.append(" rank <= 5 ");
+        sql.append(" ORDER BY mes, rank; ");
+
+        return getResult(sql.toString(), filtro, null);
+    }
+
+    public List<RelatorioDTO>  valorTotalDeEntradaESaidaNoMes(RelatorioFiltroDTO filtro) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" ");
+
+        sql.append(" with saidas as ( ");
+        sql.append(" select SUM(si.quantidade * si.valor_unitario) as valor ");
+        sql.append(" from saida s ");
+        sql.append(" join saida_item si on si.saida_id = s.id ");
+        sql.append(" where ");
+        sql.append(" DATE_TRUNC('month', s.data) = DATE_TRUNC('month', CURRENT_DATE ) ");
+        sql.append("   ), entradas as ( ");
+        sql.append(" SELECT SUM(ei.quantidade * ei.valor_unitario) as valor ");
+        sql.append(" FROM public.entrada e ");
+        sql.append(" join entrada_item ei on ei.entrada_id = e.id ");
+        sql.append(" where DATE_TRUNC('month', data_entrada) = DATE_TRUNC('month', CURRENT_DATE) ");
+        sql.append(" ) ");
+        sql.append(" select ");
+        sql.append(" s.valor as valorTotalSaida, ");
+        sql.append(" e.valor as valorTotalEntrada ");
+        sql.append(" from ");
+        sql.append(" saidas s, entradas e ");
+
+        return getResult(sql.toString(), filtro, null);
+    }
+
+    public Integer quantidadeContasAReceberVencidas(RelatorioFiltroDTO filtro) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" ");
+
+        sql.append(" SELECT ");
+        sql.append(" COUNT(*) AS quantidade_saidas_prestes_a_vencer ");
+        sql.append(" FROM ");
+        sql.append(" public.saida ");
+        sql.append("  WHERE ");
+        sql.append(" data_vencimento IS NOT NULL ");
+
+        if (filtro.getDiasAVencer() != null && !filtro.getDiasAVencer().isBlank()) {
+            sql.append(" AND data_vencimento BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '" + filtro.getDiasAVencer() + " days' ");
+        }
+
+        sql.append(" and data_pagamento is null; ");
+
+        Query query = entityManager.createNativeQuery(sql.toString());
+
+        Object resultado = query.getSingleResult();
+        return resultado != null ? ((Number) resultado).intValue() : 0 ;
     }
 
     private String criarConsultaBasicaContasAReceber(RelatorioFiltroDTO filtro) {
@@ -94,23 +231,77 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
         return sql.toString();
     }
 
+    private String criarConsultaBasicaContasAPagar(RelatorioFiltroDTO filtro) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" ");
+        sql.append(" select ");
+        sql.append(" e.id as id, ");
+        sql.append(" coalesce(SUM(ei.quantidade * ei.valor_unitario), 0) as valorTotal, ");
+        sql.append(" e.data_entrada as data ");
+        sql.append(" from ");
+        sql.append(" public.entrada e ");
+        sql.append(" left join public.entrada_item ei on	e.id = ei.entrada_id ");
+        sql.append("WHERE 1 = 1 ");
+
+//        if (filtro.getTipoRelatorio() != null) {
+//            switch (filtro.getTipoRelatorio()) {
+//                case TipoRelatorio.A_RECEBER:
+//                    sql.append(" AND s.data_pagamento IS NULL AND (s.data_vencimento IS NULL OR CURRENT_DATE < s.data_vencimento)");
+//                    break;
+//                case TipoRelatorio.RECEBIDO:
+//                    sql.append(" AND s.data_pagamento IS NOT NULL ");
+//                    break;
+//                case TipoRelatorio.VENCIDO:
+//                    sql.append(" AND s.data_vencimento IS NOT NULL AND CURRENT_DATE > s.data_vencimento ");
+//                    break;
+//            }
+//        }
+
+        SqlUtils.addParam(sql, filtro.getFornecedor(), " AND f.id = :idFornecedor ");
+
+        if (filtro.getDataInicio() != null && filtro.getDataFim() != null) {
+            SqlUtils.addParam(sql, filtro.getDataInicio(), " AND e.data_entrada between :dataInicio ");
+            SqlUtils.addParam(sql, filtro.getDataFim(), " AND :dataFim ");
+        } else if (filtro.getDataInicio() != null ) {
+            SqlUtils.addParam(sql, filtro.getDataInicio(), " AND e.data_entrada >= :dataInicio ");
+        } else if (filtro.getDataFim() != null) {
+            SqlUtils.addParam(sql, filtro.getDataFim(), " AND e.data_entrada <= :dataFim ");
+        }
+
+//        if (filtro.getDataVencimentoInicio() != null && filtro.getDataVencimentoFim() != null) {
+//            SqlUtils.addParam(sql, filtro.getDataVencimentoInicio(), " AND s.data_vencimento between :dataVencimentoInicio ");
+//            SqlUtils.addParam(sql, filtro.getDataVencimentoFim(), " AND :dataVencimentoFim ");
+//        } else if (filtro.getDataVencimentoInicio() != null ) {
+//            SqlUtils.addParam(sql, filtro.getDataVencimentoInicio(), " AND s.data_vencimento >= :dataVencimentoInicio ");
+//        } else if (filtro.getDataVencimentoFim() != null) {
+//            SqlUtils.addParam(sql, filtro.getDataVencimentoFim(), " AND s.data_vencimento <= :dataVencimentoFim ");
+//        }
+
+        sql.append(" group by e.id, e.data_entrada ");
+        sql.append(" order by e.data_entrada ");
+
+        return sql.toString();
+    }
+
     private List<RelatorioDTO> getResult(String sql, RelatorioFiltroDTO filtro, Pageable pageable) {
         Query query = entityManager.createNativeQuery(sql, Tuple.class);
 
         SqlUtils.setParam(query, filtro.getCliente(), "idCliente");
+        SqlUtils.setParam(query, filtro.getFornecedor(), "idFornecedor");
         SqlUtils.setParam(query, filtro.getDataInicio(), "dataInicio");
         SqlUtils.setParam(query, DataUtils.ajustarDataParaFimDoDia(filtro.getDataFim()), "dataFim");
         SqlUtils.setParam(query, filtro.getDataVencimentoInicio(), "dataVencimentoInicio");
         SqlUtils.setParam(query, DataUtils.ajustarDataParaFimDoDia(filtro.getDataVencimentoFim()), "dataVencimentoFim");
 
-        query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
-        query.setMaxResults(pageable.getPageSize());
+        if (pageable != null) {
+            query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+            query.setMaxResults(pageable.getPageSize());
+        }
 
         List<Tuple> resultList = query.getResultList();
 
-        return resultList.stream()
-                .map(this::convertTupleToRelatorioDTO)
-                .toList();
+        List<RelatorioDTO> relatorioDTOS = TransformerTupleToDTO.<RelatorioDTO>convertTupleToList(RelatorioDTO.class, resultList);
+        return relatorioDTOS;
     }
 
     private Long getResultCount(String consulta, RelatorioFiltroDTO filtro) {
@@ -122,10 +313,12 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
         Query query = entityManager.createNativeQuery(sql.toString());
 
         SqlUtils.setParam(query, filtro.getCliente(), "idCliente");
+        SqlUtils.setParam(query, filtro.getFornecedor(), "idFornecedor");
         SqlUtils.setParam(query, filtro.getDataInicio(), "dataInicio");
         SqlUtils.setParam(query, DataUtils.ajustarDataParaFimDoDia(filtro.getDataFim()), "dataFim");
         SqlUtils.setParam(query, filtro.getDataVencimentoInicio(), "dataVencimentoInicio");
         SqlUtils.setParam(query, DataUtils.ajustarDataParaFimDoDia(filtro.getDataVencimentoFim()), "dataVencimentoFim");
+
         Object resultado = query.getSingleResult();
         return resultado != null ? ((Number) resultado).longValue() : 0 ;
     }
