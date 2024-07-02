@@ -172,7 +172,7 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
 
     public Page<RelatorioDTO> produtos(RelatorioFiltroDTO filtro, Pageable pageable) {
         StringBuilder sql = new StringBuilder();
-        String consultaBase = criarConsultaBasicaProdutos(filtro);
+        String consultaBase = criarConsultaBasicaProdutos(filtro, false);
         sql.append(consultaBase);
 
         List<RelatorioDTO> result = getResult(sql.toString(), filtro, pageable);
@@ -180,7 +180,17 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
         return new PageImpl<>(result, pageable, getResultCount(consultaBase, filtro));
     }
 
-    private String criarConsultaBasicaProdutos(RelatorioFiltroDTO filtro) {
+    public Page<RelatorioDTO> produtosComMenosQuantidadeEstoque(RelatorioFiltroDTO filtro, Pageable pageable) {
+        StringBuilder sql = new StringBuilder();
+        String consultaBase = criarConsultaBasicaProdutos(filtro, true);
+        sql.append(consultaBase);
+
+        List<RelatorioDTO> result = getResult(sql.toString(), filtro, pageable);
+
+        return new PageImpl<>(result, pageable, getResultCount(consultaBase, filtro));
+    }
+
+    private String criarConsultaBasicaProdutos(RelatorioFiltroDTO filtro, boolean isOrderByQtd) {
         StringBuilder sql = new StringBuilder();
         sql.append(" ");
         sql.append(" SELECT ");
@@ -232,7 +242,11 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
 
         sql.append("WHERE 1 = 1 ");
         SqlUtils.addParam(sql, filtro.getProduto(), " AND p.id = :idProduto ");
-        sql.append(" ORDER BY        p.nome  ");
+        if (isOrderByQtd) {
+            sql.append(" ORDER BY        p.quantidade ASC ");
+        } else {
+            sql.append(" ORDER BY        p.nome  ");
+        }
 
         return sql.toString();
     }

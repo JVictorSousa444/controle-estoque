@@ -44,4 +44,8 @@ public class RelatorioService {
         return relatporioCustomRepository.quantidadeContasAReceberVencidas(filtro);
     }
 
+    public Page<RelatorioDTO> produtosComMenosQuantidadeEstoque(RelatorioFiltroDTO filtro, Pageable pageable) {
+        return relatporioCustomRepository.produtosComMenosQuantidadeEstoque(filtro, pageable);
+    }
+
 }

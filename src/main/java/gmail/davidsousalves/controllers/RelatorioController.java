@@ -60,4 +60,10 @@ public class RelatorioController {
         Integer resultado = relatorioService.quantidadeContasAReceberVencidas(filtro);
         return ResponseEntity.ok(resultado);
     }
+
+    @GetMapping("produtos-baixo-estoque")
+    public ResponseEntity<Page<RelatorioDTO>> produtosComMenosQuantidadeEstoque(RelatorioFiltroDTO filtro, Pageable pageable) {
+        Page<RelatorioDTO> resultado = relatorioService.produtosComMenosQuantidadeEstoque(filtro, pageable);
+        return ResponseEntity.ok(resultado);
+    }
 }

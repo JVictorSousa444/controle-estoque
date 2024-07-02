@@ -25,4 +25,6 @@ public interface RelatporioCustomRepository {
 
     Page<RelatorioDTO> produtos(RelatorioFiltroDTO filtro, Pageable pageable);
 
+    Page<RelatorioDTO> produtosComMenosQuantidadeEstoque(RelatorioFiltroDTO filtro, Pageable pageable);
+
 }
