@@ -15,6 +15,7 @@ import gmail.davidsousalves.exceptions.DatabaseException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.Produto;
 import gmail.davidsousalves.repositories.ProdutoRepository;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -31,15 +32,17 @@ public class ProdutoService {
     }
 	
 	public ProdutoDTO findById(Long id) {
-		Produto produto = repository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Id nao existe"));
-		
-		return new ProdutoDTO(produto);	
-		
-	}
+        Produto produto = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto com ID " + id + " não encontrado"));
+        return new ProdutoDTO(produto);
+    }
 	
-	public Page<ProdutoDTO> buscaPaginada(Pageable pageable) {
-        return repository.findAll(pageable).map(ProdutoDTO::new);
+	public Page<ProdutoDTO> buscaPaginada(String nome, Pageable pageable) {
+		if (StringUtils.isEmpty(nome)) {
+        	return repository.findAll(pageable).map(ProdutoDTO::new);
+		} else {
+			return repository.findByNomeContainingIgnoreCase(nome, pageable).map(ProdutoDTO::new);
+		}
     }
 
     public ProdutoDTO create(ProdutoDTO produtoDto) {
@@ -92,16 +95,15 @@ public class ProdutoService {
 			repository.atualizarQuantidadeRemover(id, quantidade);
 		}
 	}
-    
+
     private void copyDtoToEntity(ProdutoDTO dto, Produto entity) {
 		entity.setNome(dto.nome());
 		entity.setDescricao(dto.descricao());
 		entity.setCodigo(dto.codigo());
-		entity.setGrupoproduto(dto.grupoProduto());
+		entity.setGrupoProduto(dto.grupoProduto());
 		entity.setTipoUnidade(dto.tipoUnidade());
 		entity.setFabricante(dto.fabricante());
 		entity.setLucroSugerido(dto.lucroSugerido());
-		entity.setFornecedor(dto.fornecedor());
 	}
     
     private ProdutoDTO copyEntitytoDto(Produto produto) {

@@ -20,8 +20,14 @@ import gmail.davidsousalves.dto.EntradaDTO;
 import gmail.davidsousalves.exceptions.DatabaseException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
 import gmail.davidsousalves.model.Entrada;
+import gmail.davidsousalves.model.EntradaItem;
 import gmail.davidsousalves.repositories.EntradaRepository;
+import gmail.davidsousalves.utils.DataUtils;
+import gmail.davidsousalves.vo.EntradaItemVO;
+import gmail.davidsousalves.vo.EntradaVO;
+import gmail.davidsousalves.vo.ProdutoVO;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class EntradaService {
@@ -54,7 +60,7 @@ public class EntradaService {
 		}
 
         return new PageImpl<EntradaVO>(retorno, pageable, lista.getTotalElements());
-    }
+	}
 
 	public EntradaDTO findById(Long id) {
 		Entrada entrada = repository.findById(id).orElseThrow

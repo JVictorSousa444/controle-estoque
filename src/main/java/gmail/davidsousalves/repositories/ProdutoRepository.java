@@ -1,10 +1,12 @@
 package gmail.davidsousalves.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import gmail.davidsousalves.model.Produto;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import gmail.davidsousalves.model.Produto;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long>{
 
@@ -21,4 +23,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long>{
     )
     @Modifying
     void atualizarQuantidadeRemover(Long id, Integer quantidade);
+
+    Page<Produto> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 }

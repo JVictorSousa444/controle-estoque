@@ -2,7 +2,6 @@ package gmail.davidsousalves.controllers;
 
 import java.util.List;
 
-import gmail.davidsousalves.vo.SaidaVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,16 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gmail.davidsousalves.dto.SaidaDTO;
 import gmail.davidsousalves.services.SaidaService;
+import gmail.davidsousalves.vo.SaidaVO;
 
 @RestController
-@RequestMapping("/saidas")
+@RequestMapping("/api/saida")
 public class SaidaController {
 
 	@Autowired
 	private SaidaService service;
 	
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<SaidaDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<SaidaDTO>> buscarTodos() {
 		List<SaidaDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -39,7 +39,7 @@ public class SaidaController {
 		return ResponseEntity.ok(dto);
 	}
 	
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<Page<SaidaVO>> buscaPaginada(Pageable pageable) {
 	    Page<SaidaVO> saidaDTOPage = service.buscaPaginada(pageable);
 	    return ResponseEntity.ok(saidaDTOPage);

@@ -21,6 +21,9 @@ public class EstoqueService {
 
 	@Autowired
 	private EstoqueRepository repository;
+	
+	@Autowired
+	private ProdutoService produtoService;
 
 	public List<EstoqueDTO> findAll() {
 		List<Estoque> estoques = repository.findAll();
@@ -35,13 +38,15 @@ public class EstoqueService {
 		Estoque estoque = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id nao existe"));
 
 		return new EstoqueDTO(estoque);
-
 	}
 
 	public EstoqueDTO create(EstoqueDTO estoqueDto) {
+		produtoService.findById(estoqueDto.produto().getId());
+		
 		Estoque entity = new Estoque();
 		copyDtoToEntity(estoqueDto, entity);
-		entity = repository.save(entity);
+		repository.save(entity);
+		
 		return new EstoqueDTO(entity);
 	}
 
@@ -70,6 +75,7 @@ public class EstoqueService {
 	}
 
 	private void copyDtoToEntity(EstoqueDTO dto, Estoque entity) {
+		
 		entity.setProduto(dto.produto());
 		entity.setQuantidade(dto.quantidade());
 

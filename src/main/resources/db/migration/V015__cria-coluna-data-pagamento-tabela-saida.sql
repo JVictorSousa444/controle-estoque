@@ -1,2 +1,0 @@
-ALTER TABLE saida
-ADD COLUMN data_pagamento TIMESTAMP;

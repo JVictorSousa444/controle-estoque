@@ -2,13 +2,14 @@ package gmail.davidsousalves.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,10 +20,12 @@ public class Estoque {
 	private Long id;
 	
 	@OneToOne
-	@JoinColumn(name = "produto_id", nullable = false)
+	@JoinColumn(name = "produto_id")
+	@NotNull(message = "O campo produto não pode ser nulo")
 	private Produto produto;
 	
-	@Column(nullable = false)
+	@NotNull(message = "A quantidade não pode ser nula")
+    @Min(value = 1, message = "A quantidade deve ser maior que zero")
 	private Long quantidade;
 	
 	public Estoque() {

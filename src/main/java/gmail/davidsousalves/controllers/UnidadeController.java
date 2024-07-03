@@ -27,7 +27,7 @@ public class UnidadeController {
 	private UnidadeService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<UnidadeDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<UnidadeDTO>> buscarTodos() {
 		List<UnidadeDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -47,9 +47,9 @@ public class UnidadeController {
 	@PostMapping
 	public ResponseEntity<UnidadeDTO> create(@RequestBody UnidadeDTO unidade) {
 
-		service.create(unidade);
+		UnidadeDTO createUnidade = service.create(unidade);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(unidade);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createUnidade);
 	}
 
 	@PutMapping("/{id}")

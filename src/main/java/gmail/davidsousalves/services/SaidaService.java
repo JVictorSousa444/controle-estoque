@@ -15,12 +15,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import gmail.davidsousalves.dto.ClienteDTO;
 import gmail.davidsousalves.dto.SaidaDTO;
 import gmail.davidsousalves.exceptions.DatabaseException;
 import gmail.davidsousalves.exceptions.ResourceNotFoundException;
+import gmail.davidsousalves.model.Cliente;
 import gmail.davidsousalves.model.Saida;
+import gmail.davidsousalves.model.SaidaItem;
 import gmail.davidsousalves.repositories.SaidaRepository;
+import gmail.davidsousalves.vo.ClienteVO;
+import gmail.davidsousalves.vo.ProdutoVO;
+import gmail.davidsousalves.vo.SaidaItemVO;
+import gmail.davidsousalves.vo.SaidaVO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 

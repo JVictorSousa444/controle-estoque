@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,6 +26,7 @@ public class SubgrupoProduto implements Serializable{
 	@Column(length = 255)
 	private String descricao;
 	
+	@NotNull(message = "O campo grupoProduto não pode ser nulo/vazia")
 	@ManyToOne
 	@JoinColumn(name = "grupo_produto_id", nullable = false)
 	private GrupoProduto grupoProduto;

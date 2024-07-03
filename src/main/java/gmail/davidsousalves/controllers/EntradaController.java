@@ -21,19 +21,19 @@ import gmail.davidsousalves.dto.EntradaDTO;
 import gmail.davidsousalves.services.EntradaService;
 
 @RestController
-@RequestMapping("/entradas")
+@RequestMapping("/api/entrada")
 public class EntradaController {
 
 	@Autowired
 	private EntradaService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<EntradaDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<EntradaDTO>> buscarTodos() {
 		List<EntradaDTO> entradaDTO = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(entradaDTO);
 	}
 	
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<Page<EntradaVO>> buscaPaginada(Pageable pageable) {
 	    Page<EntradaVO> entradaDTOPage = service.buscaPaginada(pageable);
 	    return ResponseEntity.ok(entradaDTOPage);
@@ -47,8 +47,8 @@ public class EntradaController {
 
 	@PostMapping
 	public ResponseEntity<EntradaDTO> create(@RequestBody EntradaDTO entradaDto) {
-		service.create(entradaDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(entradaDto);
+		EntradaDTO createEntrada = service.create(entradaDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createEntrada);
 	}
 
 	@PutMapping("/{id}")

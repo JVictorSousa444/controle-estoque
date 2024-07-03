@@ -1,10 +1,15 @@
 package gmail.davidsousalves.dto;
 
-import gmail.davidsousalves.model.Fornecedor;
+import java.time.LocalDateTime;
 
-public record FornecedorDTO(Long id, String nome, String descricao, String email, String telefone ) {
+import gmail.davidsousalves.model.Fornecedor;
+import gmail.davidsousalves.model.Status;
+
+public record FornecedorDTO(Long id, String nome, String descricao, String email, String telefone, String cnpj,
+		String bairro, String cep, LocalDateTime dataCadastro, Status status) {
 
 	public FornecedorDTO(Fornecedor entity) {
-		this(entity.getId(), entity.getNome(), entity.getDescricao(), entity.getEmail(), entity.getTelefone());
+		this(entity.getId(), entity.getNome(), entity.getDescricao(), entity.getEmail(), entity.getTelefone(), entity.getCnpj(),
+				entity.getBairro(), entity.getCep(), entity.getDataCadastro(), entity.getStatus());
 	}
 }

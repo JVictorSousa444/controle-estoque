@@ -42,6 +42,7 @@ public class UnidadeService {
 	}
 
 	public UnidadeDTO create(UnidadeDTO unidadeDto) {
+		
 		Unidade entity = new Unidade();
 		copyDtoToEntity(unidadeDto, entity);
 		entity = repository.save(entity);

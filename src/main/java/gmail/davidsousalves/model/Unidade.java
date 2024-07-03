@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -16,7 +17,8 @@ public class Unidade {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(nullable = false ,length = 255, unique = true)
+	@NotBlank(message = "O campo sigla não pode ser vazio/nulo")
+	@Column(length = 255, unique = true)
 	private String sigla;
 	
 	public Unidade() {
@@ -24,7 +26,6 @@ public class Unidade {
 
 
 	public Unidade(Long id, String sigla) {
-		super();
 		this.id = id;
 		this.sigla = sigla;
 	}

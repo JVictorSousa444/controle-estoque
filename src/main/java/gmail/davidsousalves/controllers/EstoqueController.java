@@ -20,14 +20,14 @@ import gmail.davidsousalves.dto.EstoqueDTO;
 import gmail.davidsousalves.services.EstoqueService;
 
 @RestController
-@RequestMapping("/estoque")
+@RequestMapping("/api/estoque")
 public class EstoqueController {
 
 	@Autowired
 	private EstoqueService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<EstoqueDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<EstoqueDTO>> buscarTodos() {
 		List<EstoqueDTO> estoqueDTO = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(estoqueDTO);
 	}
@@ -46,9 +46,10 @@ public class EstoqueController {
 
 	@PostMapping
 	public ResponseEntity<EstoqueDTO> create(@RequestBody EstoqueDTO estoqueDto) {
-		service.create(estoqueDto);
+		
+		EstoqueDTO createEstoque = service.create(estoqueDto);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(estoqueDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createEstoque);
 	}
 
 	@PutMapping("/{id}")

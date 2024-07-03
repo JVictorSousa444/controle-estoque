@@ -20,14 +20,14 @@ import gmail.davidsousalves.dto.SaidaItemDTO;
 import gmail.davidsousalves.services.SaidaItemService;
 
 @RestController
-@RequestMapping("/saidas-itens")
+@RequestMapping("/api/saida-item")
 public class SaidaItemController {
 	
 	@Autowired
 	private SaidaItemService service;
 	
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<SaidaItemDTO>> buscarTodosClientes() {
+	public ResponseEntity<List<SaidaItemDTO>> buscarTodos() {
 		List<SaidaItemDTO> dto = service.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
@@ -46,8 +46,8 @@ public class SaidaItemController {
 
 	@PostMapping
 	public ResponseEntity<SaidaItemDTO> create(@RequestBody SaidaItemDTO saidaItemDto) {
-		service.create(saidaItemDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(saidaItemDto);
+		SaidaItemDTO createSaidaItem = service.create(saidaItemDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createSaidaItem);
 	}
 
 	@PutMapping("/{id}")
