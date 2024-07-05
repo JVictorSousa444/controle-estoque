@@ -6,7 +6,7 @@ CREATE TABLE produto (
     grupo_produto_id BIGINT NOT NULL,
     tipo_unidade_id BIGINT NOT NULL,
     fabricante_id BIGINT,
-    lucro_sugerido NUMERIC(15, 2) NOT NULL CHECK (lucro_sugerido >= 0.01),
+    lucro_sugerido NUMERIC(15, 2) NULL,
     quantidade INTEGER NOT NULL,
     
     CONSTRAINT fk_grupo_produto FOREIGN KEY (grupo_produto_id) REFERENCES grupo_produto(id),

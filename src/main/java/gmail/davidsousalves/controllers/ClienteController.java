@@ -45,8 +45,8 @@ public class ClienteController {
     }
 
 	@GetMapping
-	public ResponseEntity<Page<ClienteDTO>> buscaPaginada(String nome, Pageable pageable) {
-	    Page<ClienteDTO> clienteDTOPage = clienteService.buscaPaginada(nome, pageable);
+	public ResponseEntity<Page<ClienteDTO>> buscaPaginada(String nome, Status status, Pageable pageable) {
+	    Page<ClienteDTO> clienteDTOPage = clienteService.buscaPaginada(nome, status, pageable);
 	    return ResponseEntity.ok(clienteDTOPage);
 	}
 

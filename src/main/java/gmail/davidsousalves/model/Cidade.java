@@ -26,7 +26,7 @@ public class Cidade {
 
 	@NotBlank
 	@Size(max = 2, message = "A sigla do estado deve ter no máximo 2 caracteres")
-	@Column(length = 2, unique = true)
+	@Column(length = 2)
 	private String siglaEstado;
 
 	public Cidade() {

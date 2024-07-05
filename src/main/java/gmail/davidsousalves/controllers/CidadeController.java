@@ -27,8 +27,8 @@ public class CidadeController {
 	private CidadeService service;
 
 	@GetMapping("/busca-todos")
-	public ResponseEntity<List<CidadeDTO>> buscarTodos() {
-		List<CidadeDTO> cidadeDTO = service.findAll();
+	public ResponseEntity<List<CidadeDTO>> buscarTodos(String cidade) {
+		List<CidadeDTO> cidadeDTO = service.findAll(cidade);
 		return ResponseEntity.status(HttpStatus.OK).body(cidadeDTO);
 	}
 

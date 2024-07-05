@@ -7,11 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -30,7 +26,17 @@ public class Entrada implements Serializable{
 
 	@Transient
 	private List<EntradaItem> itens;
-	
+
+	@Column
+	private LocalDateTime dataPagamento;
+
+	@Column
+	private LocalDateTime dataVencimento;
+
+	@NotNull(message = "O campo fornecedor não pode ser nulo/vazia")
+	@ManyToOne
+	@JoinColumn(name = "fornecedor_id", nullable = false)
+	private Fornecedor fornecedor;
 	
 	public Entrada() {
 	}
@@ -66,6 +72,30 @@ public class Entrada implements Serializable{
 
 	public List<EntradaItem> getItens() {
 		return itens;
+	}
+
+	public LocalDateTime getDataPagamento() {
+		return dataPagamento;
+	}
+
+	public void setDataPagamento(LocalDateTime dataPagamento) {
+		this.dataPagamento = dataPagamento;
+	}
+
+	public @NotNull(message = "O campo fornecedor não pode ser nulo/vazia") Fornecedor getFornecedor() {
+		return fornecedor;
+	}
+
+	public void setFornecedor(@NotNull(message = "O campo fornecedor não pode ser nulo/vazia") Fornecedor fornecedor) {
+		this.fornecedor = fornecedor;
+	}
+
+	public LocalDateTime getDataVencimento() {
+		return dataVencimento;
+	}
+
+	public void setDataVencimento(LocalDateTime dataVencimento) {
+		this.dataVencimento = dataVencimento;
 	}
 
 	@Override

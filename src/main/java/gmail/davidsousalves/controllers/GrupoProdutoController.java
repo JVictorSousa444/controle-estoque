@@ -20,7 +20,7 @@ import gmail.davidsousalves.dto.GrupoProdutoDTO;
 import gmail.davidsousalves.services.GrupoProdutoService;
 
 @RestController
-@RequestMapping("/api/GrupoProduto")
+@RequestMapping("/api/grupo-produtos")
 public class GrupoProdutoController {
 
 	@Autowired

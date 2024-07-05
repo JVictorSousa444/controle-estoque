@@ -5,13 +5,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -57,6 +51,14 @@ public class Fornecedor {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
+
+	@ManyToOne
+	@JoinColumn(name = "cidade_id", nullable = false)
+	private Cidade cidade;
+
+	@NotBlank(message = "o campo endereco não pode ser vazio/nulo")
+	@Column(length = 120)
+	private String endereco;
 	
 	public Fornecedor() {
 	}
@@ -158,6 +160,22 @@ public class Fornecedor {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	public Cidade getCidade() {
+		return cidade;
+	}
+
+	public void setCidade(Cidade cidade) {
+		this.cidade = cidade;
+	}
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
 	}
 
 	@Override

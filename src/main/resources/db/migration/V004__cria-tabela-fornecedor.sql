@@ -8,5 +8,9 @@ CREATE TABLE fornecedor (
     bairro VARCHAR(255) NOT NULL,
     cep VARCHAR(20) NOT NULL,
     data_cadastro TIMESTAMP NOT NULL,
-    status VARCHAR(20) NOT NULL
+    status VARCHAR(20) NOT NULL,
+    cidade_id BIGINT NOT NULL,
+    endereco VARCHAR(120) NOT NULL,
+
+    CONSTRAINT fk_cliente_cidade FOREIGN KEY (cidade_id) REFERENCES cidade (id)
 );

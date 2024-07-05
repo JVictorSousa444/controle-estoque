@@ -3,11 +3,11 @@ package gmail.davidsousalves.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import gmail.davidsousalves.dto.FornecedorDTO;
 import gmail.davidsousalves.model.EntradaItem;
 import gmail.davidsousalves.utils.DataUtils;
-import gmail.davidsousalves.vo.EntradaItemVO;
-import gmail.davidsousalves.vo.EntradaVO;
-import gmail.davidsousalves.vo.ProdutoVO;
+import gmail.davidsousalves.vo.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,6 +38,9 @@ public class EntradaService {
 	@Autowired
 	private EntradaItemService entradaItemService;
 
+	@Autowired
+	private FornecedorService fornecedorService;
+
 	public List<EntradaDTO> findAll() {
 		List<Entrada> entradas = repository.findAll();
 		return entradas.stream().map(entrada -> copyEntitytoDto(entrada)).collect(Collectors.toList());
@@ -50,8 +53,12 @@ public class EntradaService {
 		if (lista != null) {
 			for(Entrada entrada : lista.getContent()) {
 				List<EntradaItem> itens = entradaItemService.findByEntityId(entrada.getId());
+				FornecedorDTO fornecedorDTO = fornecedorService.findById(entrada.getFornecedor().getId());
 				EntradaVO entradaVO = EntradaVO.builder()
 						.dataEntrada(DataUtils.converterLocalDateTimeParaDate(entrada.getDataEntrada()))
+						.dataPagamento(DataUtils.converterLocalDateTimeParaDate(entrada.getDataPagamento()))
+						.dataVencimento(DataUtils.converterLocalDateTimeParaDate(entrada.getDataVencimento()))
+						.fornecedor(FornecedorVO.builder().id(fornecedorDTO.id()).nome(fornecedorDTO.nome()).build())
 						.id(entrada.getId())
 						.itens(converterEntradaItem(itens))
 						.build();

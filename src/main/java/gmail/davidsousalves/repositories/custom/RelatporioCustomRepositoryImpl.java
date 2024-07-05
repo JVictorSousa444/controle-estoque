@@ -406,15 +406,15 @@ public class RelatporioCustomRepositoryImpl implements RelatporioCustomRepositor
         return resultado != null ? ((Number) resultado).longValue() : 0 ;
     }
 
-    private RelatorioDTO convertTupleToRelatorioDTO(Tuple tuple) {
-        RelatorioDTO dto = new RelatorioDTO();
-        dto.setId(((Number) tuple.get("id")).longValue());
-        dto.setCliente(tuple.get("cliente", String.class));
-        dto.setData(tuple.get("data", Date.class));
-        dto.setDataPagamento(tuple.get("dataPagamento", Date.class));
-        dto.setDataVencimento(tuple.get("dataVencimento", Date.class));
-        dto.setSituacao(tuple.get("situacao", String.class));
-        dto.setValorTotal(tuple.get("valorTotal", Double.class));
-        return dto;
-    }
+//    private RelatorioDTO convertTupleToRelatorioDTO(Tuple tuple) {
+//        RelatorioDTO dto = new RelatorioDTO();
+//        dto.setId(((Number) tuple.get("id")).longValue());
+//        dto.setCliente(tuple.get("cliente", String.class));
+//        dto.setData(tuple.get("data", Date.class));
+//        dto.setDataPagamento(tuple.get("dataPagamento", Date.class));
+//        dto.setDataVencimento(tuple.get("dataVencimento", Date.class));
+//        dto.setSituacao(tuple.get("situacao", String.class));
+//        dto.setValorTotal(tuple.get("valorTotal", Double.class));
+//        return dto;
+//    }
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 
@@ -21,16 +22,16 @@ public class RelatorioDTO {
     private Date dataVencimento;
     private Date dataPagamento;
     private String situacao;
-    private Double valorTotal;
+    private BigDecimal valorTotal;
     private String mes;
-    private Double valorTotalEntrada;
-    private Double valorTotalSaida;
+    private BigDecimal valorTotalEntrada;
+    private BigDecimal valorTotalSaida;
     private String produto;
     private Long quantidade;
     private Long qtdAtual;
     private Long qtdEntrada;
     private Long qtdSaida;
-    private Double precoMedioEntrada;
-    private Double precoMedioSaida;
+    private BigDecimal precoMedioEntrada;
+    private BigDecimal precoMedioSaida;
 
 }

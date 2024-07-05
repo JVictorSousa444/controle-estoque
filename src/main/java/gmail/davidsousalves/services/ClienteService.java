@@ -38,9 +38,13 @@ public class ClienteService {
 		return clientes.stream().map(cliente -> copyEntitytoDto(cliente)).collect(Collectors.toList());
 	}
 
-	public Page<ClienteDTO> buscaPaginada(String nome, Pageable pageable) {
-		if (StringUtils.isEmpty(nome)) {
+	public Page<ClienteDTO> buscaPaginada(String nome, Status status, Pageable pageable) {
+		if (StringUtils.isEmpty(nome) && status == null) {
         	return clienteRepository.findAll(pageable).map(ClienteDTO::new);
+		} else if (!StringUtils.isEmpty(nome) && status != null) {
+			return clienteRepository.findByNomeContainingIgnoreCaseAndStatus(nome, status, pageable).map(ClienteDTO::new);
+		} else if (status != null) {
+			return clienteRepository.findByStatus(status, pageable).map(ClienteDTO::new);
 		} else {
 			return clienteRepository.findByNomeContainingIgnoreCase(nome, pageable).map(ClienteDTO::new);
 		}

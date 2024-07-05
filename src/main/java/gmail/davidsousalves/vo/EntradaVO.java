@@ -14,8 +14,13 @@ public class EntradaVO {
 
     private Long id;
 
-    @Column(nullable = false)
     private Date dataEntrada;
+
+    private Date dataPagamento;
+
+    private Date dataVencimento;
+
+    private FornecedorVO fornecedor;
 
     @Transient
     private List<EntradaItemVO> itens;

@@ -46,7 +46,7 @@ public class Produto {
 	private Fabricante fabricante;
 	
 	
-	@NotNull(message = "O lucro sugerido não pode ser nula/vazio")
+	//@NotNull(message = "O lucro sugerido não pode ser nula/vazio")
 	@DecimalMin(value = "0.01", message = "O lucro seguerido deve ser maior que zero")
 	private Double lucroSugerido;
 

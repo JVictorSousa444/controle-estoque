@@ -1,5 +1,6 @@
 package gmail.davidsousalves.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,8 +23,13 @@ public class CidadeService {
 	@Autowired
 	private CidadeRepository repository;
 
-	public List<CidadeDTO> findAll() {
-		List<Cidade> cidades = repository.findAll();
+	public List<CidadeDTO> findAll(String nome) {
+		List<Cidade> cidades = new ArrayList<>();
+		if (nome != null && !nome.isBlank()) {
+			cidades = repository.findByNome(nome);
+		} else {
+			cidades = repository.findAll();
+		}
 		return cidades.stream().map(cidade -> copyEntitytoDto(cidade)).collect(Collectors.toList());
 	}
 
